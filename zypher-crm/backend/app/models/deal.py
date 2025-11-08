@@ -1,6 +1,8 @@
-from sqlalchemy import Column, String, Integer, ForeignKey, Float, Date, Enum as SQLEnum, JSON
+from sqlalchemy import Column, String, Text, ForeignKey, Float, Date, Enum as SQLEnum, JSON, Boolean, Integer
 from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import UUID
 import enum
+import uuid
 
 from app.models.base import BaseModel
 
@@ -16,37 +18,78 @@ class DealStage(str, enum.Enum):
     LOST = "lost"
 
 
+class DealPriority(str, enum.Enum):
+    """Prioridad del deal"""
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    URGENT = "urgent"
+
+
+class DealSource(str, enum.Enum):
+    """Fuente de origen del deal"""
+    WEBSITE = "website"
+    REFERRAL = "referral"
+    COLD_CALL = "cold_call"
+    SOCIAL_MEDIA = "social_media"
+    EMAIL_CAMPAIGN = "email_campaign"
+    EVENT = "event"
+    PARTNER = "partner"
+    OTHER = "other"
+
+
 class Deal(BaseModel):
-    """Modelo de negocio/oportunidad en el pipeline"""
+    """Modelo de negocio/oportunidad en el pipeline - PHASE 3"""
     __tablename__ = "deals"
 
-    title = Column(String, nullable=False, index=True)
-    description = Column(String, nullable=True)
+    # Cambiamos a UUID para mejor escalabilidad
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+
+    # Información básica
+    title = Column(String(300), nullable=False, index=True)
+    description = Column(Text, nullable=True)
 
     # Valor del negocio
-    value = Column(Float, default=0.0, nullable=False)
-    currency = Column(String, default="USD", nullable=False)
+    value = Column(Float, default=0.0, nullable=False, index=True)
+    currency = Column(String(10), default="USD", nullable=False)
 
     # Etapa en el pipeline
-    stage = Column(SQLEnum(DealStage), default=DealStage.LEAD, nullable=False)
+    stage = Column(SQLEnum(DealStage), default=DealStage.LEAD, nullable=False, index=True)
 
     # Probabilidad de cierre (0-100)
     probability = Column(Integer, default=0, nullable=False)
 
-    # Fecha estimada de cierre
-    expected_close_date = Column(Date, nullable=True)
+    # Prioridad del deal
+    priority = Column(SQLEnum(DealPriority), default=DealPriority.MEDIUM, nullable=False)
 
-    # Campos personalizados
-    custom_fields = Column(JSON, nullable=True, default={})
+    # Fuente de origen
+    source = Column(SQLEnum(DealSource), default=DealSource.OTHER, nullable=True)
 
-    # Relaciones
-    contact_id = Column(Integer, ForeignKey("contacts.id"), nullable=False)
-    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    # Fechas importantes
+    expected_close_date = Column(Date, nullable=True, index=True)
+    actual_close_date = Column(Date, nullable=True)
 
+    # Motivo de pérdida (si stage = LOST)
+    lost_reason = Column(String(500), nullable=True)
+
+    # Tags para categorización
+    tags = Column(JSON, nullable=True, default=list)
+
+    # Campos personalizados (JSON flexible)
+    custom_fields = Column(JSON, nullable=True, default=dict)
+
+    # Estado activo
+    is_active = Column(Boolean, default=True, nullable=False, index=True)
+
+    # Relaciones (UUID en lugar de Integer)
+    contact_id = Column(UUID(as_uuid=True), ForeignKey("contacts.id"), nullable=False, index=True)
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+
+    # Relationships (comentadas por ahora, activar cuando se implementen back_populates)
     # contact = relationship("Contact", back_populates="deals")
     # owner = relationship("User", back_populates="deals")
-    # tasks = relationship("Task", back_populates="deal")
-    # notes = relationship("Note", back_populates="deal")
+    # tasks = relationship("Task", back_populates="deal", cascade="all, delete-orphan")
+    # notes = relationship("Note", back_populates="deal", cascade="all, delete-orphan")
 
     def __repr__(self):
-        return f"<Deal {self.title} - {self.stage}>"
+        return f"<Deal {self.title} - {self.stage} - ${self.value}>"
