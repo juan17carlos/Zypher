@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -14,33 +14,33 @@ router = APIRouter()
 # Schemas
 class TaskCreate(BaseModel):
     title: str
-    description: str | None = None
+    description: Optional[str] = None
     status: TaskStatus = TaskStatus.PENDING
     priority: TaskPriority = TaskPriority.MEDIUM
-    due_date: datetime | None = None
-    contact_id: int | None = None
-    deal_id: int | None = None
+    due_date: Optional[datetime] = None
+    contact_id: Optional[int] = None
+    deal_id: Optional[int] = None
 
 
 class TaskUpdate(BaseModel):
-    title: str | None = None
-    description: str | None = None
-    status: TaskStatus | None = None
-    priority: TaskPriority | None = None
-    due_date: datetime | None = None
+    title: Optional[str] = None
+    description: Optional[str] = None
+    status: Optional[TaskStatus] = None
+    priority: Optional[TaskPriority] = None
+    due_date: Optional[datetime] = None
 
 
 class TaskResponse(BaseModel):
     id: int
     title: str
-    description: str | None
+    description: Optional[str]
     status: str
     priority: str
-    due_date: datetime | None
-    completed_at: datetime | None
+    due_date: Optional[datetime]
+    completed_at: Optional[datetime]
     assigned_to_id: int
-    contact_id: int | None
-    deal_id: int | None
+    contact_id: Optional[int]
+    deal_id: Optional[int]
     created_at: datetime
     updated_at: datetime
 
@@ -52,7 +52,7 @@ class TaskResponse(BaseModel):
 async def get_tasks(
     skip: int = 0,
     limit: int = 100,
-    status_filter: TaskStatus | None = None,
+    status_filter: Optional[TaskStatus] = None,
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user_from_token)
 ):

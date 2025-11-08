@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime, date
 
@@ -14,36 +14,36 @@ router = APIRouter()
 # Schemas
 class DealCreate(BaseModel):
     title: str
-    description: str | None = None
+    description: Optional[str] = None
     value: float = 0.0
     currency: str = "USD"
     stage: DealStage = DealStage.LEAD
     probability: int = 0
-    expected_close_date: date | None = None
+    expected_close_date: Optional[date] = None
     contact_id: int
     custom_fields: dict = {}
 
 
 class DealUpdate(BaseModel):
-    title: str | None = None
-    description: str | None = None
-    value: float | None = None
-    currency: str | None = None
-    stage: DealStage | None = None
-    probability: int | None = None
-    expected_close_date: date | None = None
-    custom_fields: dict | None = None
+    title: Optional[str] = None
+    description: Optional[str] = None
+    value: Optional[float] = None
+    currency: Optional[str] = None
+    stage: Optional[DealStage] = None
+    probability: Optional[int] = None
+    expected_close_date: Optional[date] = None
+    custom_fields: Optional[dict] = None
 
 
 class DealResponse(BaseModel):
     id: int
     title: str
-    description: str | None
+    description: Optional[str]
     value: float
     currency: str
     stage: str
     probability: int
-    expected_close_date: date | None
+    expected_close_date: Optional[date]
     contact_id: int
     owner_id: int
     custom_fields: dict
@@ -58,7 +58,7 @@ class DealResponse(BaseModel):
 async def get_deals(
     skip: int = 0,
     limit: int = 100,
-    stage: DealStage | None = None,
+    stage: Optional[DealStage] = None,
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user_from_token)
 ):

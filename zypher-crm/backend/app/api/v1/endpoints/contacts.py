@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
 
@@ -14,43 +14,43 @@ router = APIRouter()
 # Schemas
 class ContactCreate(BaseModel):
     full_name: str
-    email: EmailStr | None = None
-    phone: str | None = None
-    company: str | None = None
-    position: str | None = None
-    address: str | None = None
-    city: str | None = None
-    state: str | None = None
-    country: str | None = None
-    zip_code: str | None = None
+    email: Optional[EmailStr] = None
+    phone: Optional[str] = None
+    company: Optional[str] = None
+    position: Optional[str] = None
+    address: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    country: Optional[str] = None
+    zip_code: Optional[str] = None
     industry_template: IndustryTemplate = IndustryTemplate.GENERIC
     custom_fields: dict = {}
     tags: list = []
 
 
 class ContactUpdate(BaseModel):
-    full_name: str | None = None
-    email: EmailStr | None = None
-    phone: str | None = None
-    company: str | None = None
-    position: str | None = None
-    address: str | None = None
-    city: str | None = None
-    state: str | None = None
-    country: str | None = None
-    zip_code: str | None = None
-    industry_template: IndustryTemplate | None = None
-    custom_fields: dict | None = None
-    tags: list | None = None
+    full_name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    phone: Optional[str] = None
+    company: Optional[str] = None
+    position: Optional[str] = None
+    address: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    country: Optional[str] = None
+    zip_code: Optional[str] = None
+    industry_template: Optional[IndustryTemplate] = None
+    custom_fields: Optional[dict] = None
+    tags: Optional[list] = None
 
 
 class ContactResponse(BaseModel):
     id: int
     full_name: str
-    email: str | None
-    phone: str | None
-    company: str | None
-    position: str | None
+    email: Optional[str]
+    phone: Optional[str]
+    company: Optional[str]
+    position: Optional[str]
     industry_template: str
     custom_fields: dict
     tags: list
