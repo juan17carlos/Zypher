@@ -1,6 +1,7 @@
 // frontend/src/components/deals/DealModal.tsx - Modal ELABORADO para Deal (Phase 3)
 
 import { useState, useEffect, useMemo } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   X,
   DollarSign,
@@ -25,6 +26,8 @@ import {
   SOURCE_OPTIONS,
   StageProbabilities,
 } from '@/types/deal'
+import SelectDropdown from '@/components/ui/SelectDropdown'
+import DatePicker from '@/components/ui/DatePicker'
 
 interface DealModalProps {
   isOpen: boolean
@@ -54,9 +57,9 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
     description: null,
     value: 0,
     currency: 'USD',
-    stage: 'lead',
+    stage: 'LEAD',
     probability: 10,
-    priority: 'medium',
+    priority: 'MEDIUM',
     source: null,
     expected_close_date: null,
     actual_close_date: null,
@@ -115,9 +118,9 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
           description: null,
           value: 0,
           currency: 'USD',
-          stage: 'lead',
+          stage: 'LEAD',
           probability: 10,
-          priority: 'medium',
+          priority: 'MEDIUM',
           source: null,
           expected_close_date: null,
           actual_close_date: null,
@@ -256,16 +259,28 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20">
-        {/* Overlay */}
-        <div
-          className="fixed inset-0 transition-opacity bg-gray-900 bg-opacity-60 backdrop-blur-sm"
-          onClick={onClose}
-        />
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20">
+            {/* Overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-gray-900 bg-opacity-60 backdrop-blur-sm"
+              onClick={onClose}
+            />
 
-        {/* Modal Container */}
-        <div className="relative inline-block w-full max-w-5xl my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl">
+            {/* Modal Container */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.3, type: 'spring', damping: 25 }}
+              className="relative inline-block w-full max-w-5xl my-8 overflow-hidden text-left align-middle bg-white shadow-2xl rounded-2xl"
+            >
           {/* Header */}
           <div className="relative px-8 py-6 bg-white border-b border-gray-200">
             <div className="flex items-center justify-between">
@@ -284,12 +299,14 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
                   </p>
                 </div>
               </div>
-              <button
+              <motion.button
+                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={onClose}
                 className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
               >
                 <X className="w-6 h-6" />
-              </button>
+              </motion.button>
             </div>
           </div>
 
@@ -365,9 +382,11 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
                   {tabs.map((tab) => {
                     const Icon = tab.icon
                     return (
-                      <button
+                      <motion.button
                         key={tab.id}
                         type="button"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         onClick={() => setActiveTab(tab.id)}
                         className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                           activeTab === tab.id
@@ -377,7 +396,7 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
                       >
                         <Icon className="w-4 h-4" />
                         {tab.label}
-                      </button>
+                      </motion.button>
                     )
                   })}
                 </nav>
@@ -428,27 +447,27 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
                         <User className="w-4 h-4 text-indigo-600" />
                         Contacto *
                       </label>
-                      <select
-                        required
+                      <SelectDropdown
                         value={formData.contact_id}
-                        onChange={(e) => setFormData({ ...formData, contact_id: e.target.value })}
-                        onBlur={() => handleBlur('contact_id')}
-                        className={`w-full px-4 py-3 border rounded-lg transition-all ${
-                          getFieldError('contact_id')
-                            ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-                            : 'border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent'
-                        }`}
+                        onChange={(value) => {
+                          setFormData({ ...formData, contact_id: value })
+                          handleBlur('contact_id')
+                        }}
+                        options={contacts.map((contact) => ({
+                          value: contact.id,
+                          label: contact.full_name,
+                          description: contact.company || undefined,
+                        }))}
+                        placeholder="Selecciona un contacto"
+                        searchable
                         disabled={loadingContacts}
-                      >
-                        <option value="">Selecciona un contacto</option>
-                        {contacts.map((contact) => (
-                          <option key={contact.id} value={contact.id}>
-                            {contact.full_name} {contact.company ? `- ${contact.company}` : ''}
-                          </option>
-                        ))}
-                      </select>
+                        error={getFieldError('contact_id')}
+                      />
                       {getFieldError('contact_id') && (
-                        <p className="mt-1 text-sm text-red-600">{getFieldError('contact_id')}</p>
+                        <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                          <AlertCircle className="w-3 h-3" />
+                          {getFieldError('contact_id')}
+                        </p>
                       )}
                     </div>
 
@@ -458,17 +477,15 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
                           <TrendingUp className="w-4 h-4 text-indigo-600" />
                           Etapa del Pipeline
                         </label>
-                        <select
+                        <SelectDropdown
                           value={formData.stage}
-                          onChange={(e) => handleStageChange(e.target.value)}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                        >
-                          {STAGE_OPTIONS.map((opt) => (
-                            <option key={opt.value} value={opt.value}>
-                              {opt.label}
-                            </option>
-                          ))}
-                        </select>
+                          onChange={(value) => handleStageChange(value)}
+                          options={STAGE_OPTIONS.map((opt) => ({
+                            value: opt.value,
+                            label: opt.label,
+                          }))}
+                          placeholder="Selecciona una etapa"
+                        />
                       </div>
 
                       <div>
@@ -495,39 +512,34 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
                         <label className="block text-sm font-semibold text-gray-900 mb-2">
                           Prioridad
                         </label>
-                        <select
+                        <SelectDropdown
                           value={formData.priority}
-                          onChange={(e) =>
-                            setFormData({ ...formData, priority: e.target.value as any })
+                          onChange={(value) =>
+                            setFormData({ ...formData, priority: value as any })
                           }
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                        >
-                          {PRIORITY_OPTIONS.map((opt) => (
-                            <option key={opt.value} value={opt.value}>
-                              {opt.label}
-                            </option>
-                          ))}
-                        </select>
+                          options={PRIORITY_OPTIONS.map((opt) => ({
+                            value: opt.value,
+                            label: opt.label,
+                          }))}
+                          placeholder="Selecciona prioridad"
+                        />
                       </div>
 
                       <div>
                         <label className="block text-sm font-semibold text-gray-900 mb-2">
                           Fuente de Origen
                         </label>
-                        <select
+                        <SelectDropdown
                           value={formData.source || ''}
-                          onChange={(e) =>
-                            setFormData({ ...formData, source: e.target.value as any || null })
+                          onChange={(value) =>
+                            setFormData({ ...formData, source: value as any || null })
                           }
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                        >
-                          <option value="">Selecciona una fuente</option>
-                          {SOURCE_OPTIONS.map((opt) => (
-                            <option key={opt.value} value={opt.value}>
-                              {opt.label}
-                            </option>
-                          ))}
-                        </select>
+                          options={SOURCE_OPTIONS.map((opt) => ({
+                            value: opt.value,
+                            label: opt.label,
+                          }))}
+                          placeholder="Selecciona una fuente"
+                        />
                       </div>
                     </div>
 
@@ -591,13 +603,15 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
                         <Calendar className="w-4 h-4 text-indigo-600" />
                         Fecha Estimada de Cierre
                       </label>
-                      <input
-                        type="date"
-                        value={formData.expected_close_date || ''}
-                        onChange={(e) =>
-                          setFormData({ ...formData, expected_close_date: e.target.value || null })
+                      <DatePicker
+                        selected={formData.expected_close_date ? new Date(formData.expected_close_date) : null}
+                        onChange={(date) =>
+                          setFormData({
+                            ...formData,
+                            expected_close_date: date ? date.toISOString().split('T')[0] : null,
+                          })
                         }
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        placeholderText="Selecciona una fecha"
                       />
                     </div>
 
@@ -606,13 +620,15 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
                         <label className="block text-sm font-semibold text-gray-900 mb-2">
                           Fecha Real de Cierre
                         </label>
-                        <input
-                          type="date"
-                          value={formData.actual_close_date || ''}
-                          onChange={(e) =>
-                            setFormData({ ...formData, actual_close_date: e.target.value || null })
+                        <DatePicker
+                          selected={formData.actual_close_date ? new Date(formData.actual_close_date) : null}
+                          onChange={(date) =>
+                            setFormData({
+                              ...formData,
+                              actual_close_date: date ? date.toISOString().split('T')[0] : null,
+                            })
                           }
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                          placeholderText="Selecciona una fecha"
                         />
                       </div>
                     )}
@@ -655,13 +671,15 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
                           className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                           placeholder="Escribe un tag y presiona Enter"
                         />
-                        <button
+                        <motion.button
                           type="button"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
                           onClick={handleAddTag}
                           className="px-6 py-3 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors"
                         >
                           Agregar
-                        </button>
+                        </motion.button>
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {formData.tags && formData.tags.length > 0 ? (
@@ -717,16 +735,20 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <button
+                  <motion.button
                     type="button"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={onClose}
                     disabled={loading}
                     className="px-6 py-3 text-sm font-medium text-gray-700 bg-gray-200 border border-gray-300 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50"
                   >
                     Cancelar
-                  </button>
-                  <button
+                  </motion.button>
+                  <motion.button
                     type="submit"
+                    whileHover={{ scale: loading || !isFormValid ? 1 : 1.05 }}
+                    whileTap={{ scale: loading || !isFormValid ? 1 : 0.95 }}
                     onClick={handleSubmit}
                     disabled={loading || !isFormValid}
                     className="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
@@ -742,13 +764,15 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
                         {deal ? 'Actualizar Deal' : 'Crear Deal'}
                       </>
                     )}
-                  </button>
+                  </motion.button>
                 </div>
               </div>
             </div>
           </div>
+        </motion.div>
         </div>
       </div>
-    </div>
+      )}
+    </AnimatePresence>
   )
 }
