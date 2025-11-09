@@ -8,7 +8,7 @@ import type { TaskOut } from '@/types/task'
 import tasksService from '@/services/tasksService'
 
 export default function TasksPage() {
-  const [selectedTask, setSelectedTask] = useState<TaskOut | null>(null)
+  const [_selectedTask, setSelectedTask] = useState<TaskOut | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingTask, setEditingTask] = useState<TaskOut | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)

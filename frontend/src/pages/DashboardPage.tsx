@@ -14,7 +14,6 @@ import {
   Award,
   Loader2,
   ArrowUpRight,
-  ArrowDownRight,
 } from 'lucide-react'
 import contactsService from '@/services/contactsService'
 import dealsService from '@/services/dealsService'
@@ -205,7 +204,7 @@ export default function DashboardPage() {
             Object.entries(dealStats.deals_by_stage).map(([stage, count]) => {
               const stageKey = stage.toLowerCase() as keyof typeof StageLabels
               const label = StageLabels[stageKey] || stage
-              const value = dealStats.value_by_stage[stage] || 0
+              const value = (dealStats.value_by_stage as any)[stage] || 0
 
               // Colores por etapa
               const colors: Record<string, { bg: string; text: string; border: string }> = {

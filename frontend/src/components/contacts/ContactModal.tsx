@@ -15,7 +15,6 @@ import {
   Check,
   AlertCircle,
   Loader2,
-  ChevronRight,
   Save,
   UserCircle2,
 } from 'lucide-react'

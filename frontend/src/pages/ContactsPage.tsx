@@ -8,7 +8,7 @@ import type { ContactOut } from '@/types/contact'
 import contactService from '@/services/contactsService'
 
 export default function ContactsPage() {
-  const [selectedContact, setSelectedContact] = useState<ContactOut | null>(null)
+  const [_selectedContact, setSelectedContact] = useState<ContactOut | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingContact, setEditingContact] = useState<ContactOut | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
