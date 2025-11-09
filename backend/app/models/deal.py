@@ -1,8 +1,6 @@
 from sqlalchemy import Column, String, Text, ForeignKey, Float, Date, Enum as SQLEnum, JSON, Boolean, Integer
 from sqlalchemy.orm import relationship
-from sqlalchemy.dialects.postgresql import UUID
 import enum
-import uuid
 
 from app.models.base import BaseModel
 
@@ -42,8 +40,8 @@ class Deal(BaseModel):
     """Modelo de negocio/oportunidad en el pipeline - PHASE 3"""
     __tablename__ = "deals"
 
-    # Cambiamos a UUID para mejor escalabilidad
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    # NOTA: id heredado de BaseModel (Integer) - alineado con migración
+    # BaseModel ya define: id = Column(Integer, primary_key=True, index=True)
 
     # Información básica
     title = Column(String(300), nullable=False, index=True)
@@ -81,8 +79,8 @@ class Deal(BaseModel):
     # Estado activo
     is_active = Column(Boolean, default=True, nullable=False, index=True)
 
-    # Relaciones (UUID en lugar de Integer)
-    contact_id = Column(UUID(as_uuid=True), ForeignKey("contacts.id"), nullable=False, index=True)
+    # Relaciones - Integer IDs alineados con la base de datos
+    contact_id = Column(Integer, ForeignKey("contacts.id"), nullable=False, index=True)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
 
     # Relationships (comentadas por ahora, activar cuando se implementen back_populates)

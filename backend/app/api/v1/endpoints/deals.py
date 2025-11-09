@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func, or_, case
 from typing import Optional
 from datetime import datetime, timedelta
-from uuid import UUID
 
 from app.dependencies import get_db, get_current_user
 from app.models.deal import Deal, DealStage, DealPriority, DealSource
@@ -193,7 +192,7 @@ async def get_deals_stats(
 
 @router.get("/{deal_id}", response_model=DealWithContact)
 async def get_deal(
-    deal_id: UUID,
+    deal_id: int,
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
@@ -264,7 +263,7 @@ async def create_deal(
 
 @router.put("/{deal_id}", response_model=DealOut)
 async def update_deal(
-    deal_id: UUID,
+    deal_id: int,
     deal_data: DealUpdate,
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
@@ -307,7 +306,7 @@ async def update_deal(
 
 @router.patch("/{deal_id}/stage", response_model=DealOut)
 async def update_deal_stage(
-    deal_id: UUID,
+    deal_id: int,
     stage_data: DealStageUpdate,
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
@@ -354,7 +353,7 @@ async def update_deal_stage(
 
 @router.delete("/{deal_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_deal(
-    deal_id: UUID,
+    deal_id: int,
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):

@@ -1,105 +1,202 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
-from typing import List, Optional
-from pydantic import BaseModel
-from datetime import datetime
+# backend/app/api/v1/endpoints/tasks.py - Endpoints completos para Tasks
 
-from app.core.database import get_db
-from app.dependencies import get_current_user
+from fastapi import APIRouter, Depends, HTTPException, status, Query
+from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import func, or_, and_
+from typing import Optional
+from datetime import datetime, timedelta
+
+from app.dependencies import get_db, get_current_user
 from app.models.task import Task, TaskStatus, TaskPriority
+from app.models.contact import Contact
+from app.models.deal import Deal
+from app.models.user import User
+from app.schemas.task import (
+    TaskCreate,
+    TaskUpdate,
+    TaskOut,
+    TasksPaginatedResponse,
+    TaskStats,
+    TaskWithDetails,
+)
 
 router = APIRouter()
 
 
-# Schemas
-class TaskCreate(BaseModel):
-    title: str
-    description: Optional[str] = None
-    status: TaskStatus = TaskStatus.PENDING
-    priority: TaskPriority = TaskPriority.MEDIUM
-    due_date: Optional[datetime] = None
-    contact_id: Optional[int] = None
-    deal_id: Optional[int] = None
+# ==========================================
+# ENDPOINT CRUD COMPLETOS
+# ==========================================
 
-
-class TaskUpdate(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
-    status: Optional[TaskStatus] = None
-    priority: Optional[TaskPriority] = None
-    due_date: Optional[datetime] = None
-
-
-class TaskResponse(BaseModel):
-    id: int
-    title: str
-    description: Optional[str]
-    status: str
-    priority: str
-    due_date: Optional[datetime]
-    completed_at: Optional[datetime]
-    assigned_to_id: int
-    contact_id: Optional[int]
-    deal_id: Optional[int]
-    created_at: datetime
-    updated_at: datetime
-
-    class Config:
-        from_attributes = True
-
-
-@router.get("/", response_model=List[TaskResponse])
-async def get_tasks(
-    skip: int = 0,
-    limit: int = 100,
-    status_filter: Optional[TaskStatus] = None,
+@router.get("/", response_model=TasksPaginatedResponse)
+async def get_tasks_paginated(
+    page: int = Query(1, ge=1, description="Número de página"),
+    page_size: int = Query(20, ge=1, le=100, description="Tamaño de página"),
+    search: Optional[str] = Query(None, description="Búsqueda por título o descripción"),
+    status: Optional[TaskStatus] = Query(None, description="Filtrar por estado"),
+    priority: Optional[TaskPriority] = Query(None, description="Filtrar por prioridad"),
+    contact_id: Optional[int] = Query(None, description="Filtrar por contacto"),
+    deal_id: Optional[int] = Query(None, description="Filtrar por deal"),
+    overdue: Optional[bool] = Query(None, description="Solo tareas vencidas"),
+    sort_by: str = Query("due_date", description="Campo para ordenar"),
+    sort_order: str = Query("asc", description="Orden: asc o desc"),
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    """Obtener lista de tareas"""
+    """Obtener tasks paginadas con filtros y búsqueda"""
 
-    user_id = current_user.id
+    user_id = int(current_user["sub"])
+
+    # Query base
     query = db.query(Task).filter(Task.assigned_to_id == user_id)
 
-    if status_filter:
-        query = query.filter(Task.status == status_filter)
+    # Filtro de búsqueda
+    if search:
+        search_filter = f"%{search}%"
+        query = query.filter(
+            or_(
+                Task.title.ilike(search_filter),
+                Task.description.ilike(search_filter),
+            )
+        )
 
-    tasks = query.offset(skip).limit(limit).all()
-    return tasks
+    # Filtros específicos
+    if status:
+        query = query.filter(Task.status == status)
 
+    if priority:
+        query = query.filter(Task.priority == priority)
 
-@router.post("/", response_model=TaskResponse, status_code=status.HTTP_201_CREATED)
-async def create_task(
-    task_data: TaskCreate,
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
-):
-    """Crear nueva tarea"""
+    if contact_id:
+        query = query.filter(Task.contact_id == contact_id)
 
-    user_id = current_user.id
+    if deal_id:
+        query = query.filter(Task.deal_id == deal_id)
 
-    new_task = Task(
-        **task_data.model_dump(),
-        assigned_to_id=user_id
+    # Filtro de vencidas
+    if overdue is True:
+        now = datetime.utcnow()
+        query = query.filter(
+            and_(
+                Task.due_date < now,
+                Task.status.in_([TaskStatus.PENDING, TaskStatus.IN_PROGRESS])
+            )
+        )
+
+    # Total de registros
+    total = query.count()
+
+    # Ordenamiento
+    order_column = getattr(Task, sort_by, Task.due_date)
+    if sort_order == "desc":
+        query = query.order_by(order_column.desc())
+    else:
+        query = query.order_by(order_column.asc())
+
+    # Paginación
+    offset = (page - 1) * page_size
+    tasks = query.offset(offset).limit(page_size).all()
+
+    total_pages = (total + page_size - 1) // page_size
+
+    return TasksPaginatedResponse(
+        items=tasks,
+        total=total,
+        page=page,
+        page_size=page_size,
+        total_pages=total_pages,
     )
 
-    db.add(new_task)
-    db.commit()
-    db.refresh(new_task)
 
-    return new_task
-
-
-@router.put("/{task_id}", response_model=TaskResponse)
-async def update_task(
-    task_id: int,
-    task_data: TaskUpdate,
+@router.get("/stats", response_model=TaskStats)
+async def get_tasks_stats(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    """Actualizar tarea"""
+    """Obtener estadísticas de tasks"""
 
-    user_id = current_user.id
+    user_id = int(current_user["sub"])
+
+    # Query base
+    query = db.query(Task).filter(Task.assigned_to_id == user_id)
+
+    # Totales por estado
+    total_tasks = query.count()
+    pending_tasks = query.filter(Task.status == TaskStatus.PENDING).count()
+    in_progress_tasks = query.filter(Task.status == TaskStatus.IN_PROGRESS).count()
+    completed_tasks = query.filter(Task.status == TaskStatus.COMPLETED).count()
+    cancelled_tasks = query.filter(Task.status == TaskStatus.CANCELLED).count()
+
+    # Por prioridad
+    tasks_by_priority = {}
+    for priority in TaskPriority:
+        tasks_by_priority[priority.value] = query.filter(
+            Task.priority == priority
+        ).count()
+
+    # Por estado
+    tasks_by_status = {}
+    for task_status in TaskStatus:
+        tasks_by_status[task_status.value] = query.filter(
+            Task.status == task_status
+        ).count()
+
+    # Vencimiento
+    now = datetime.utcnow()
+    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    today_end = today_start + timedelta(days=1)
+    week_end = today_start + timedelta(days=7)
+
+    overdue_tasks = query.filter(
+        and_(
+            Task.due_date < now,
+            Task.status.in_([TaskStatus.PENDING, TaskStatus.IN_PROGRESS])
+        )
+    ).count()
+
+    due_today = query.filter(
+        and_(
+            Task.due_date >= today_start,
+            Task.due_date < today_end,
+            Task.status.in_([TaskStatus.PENDING, TaskStatus.IN_PROGRESS])
+        )
+    ).count()
+
+    due_this_week = query.filter(
+        and_(
+            Task.due_date >= today_start,
+            Task.due_date < week_end,
+            Task.status.in_([TaskStatus.PENDING, TaskStatus.IN_PROGRESS])
+        )
+    ).count()
+
+    # Tasa de completación
+    completion_rate = (completed_tasks / total_tasks * 100) if total_tasks > 0 else 0.0
+
+    return TaskStats(
+        total_tasks=total_tasks,
+        pending_tasks=pending_tasks,
+        in_progress_tasks=in_progress_tasks,
+        completed_tasks=completed_tasks,
+        cancelled_tasks=cancelled_tasks,
+        tasks_by_priority=tasks_by_priority,
+        tasks_by_status=tasks_by_status,
+        overdue_tasks=overdue_tasks,
+        due_today=due_today,
+        due_this_week=due_this_week,
+        completion_rate=completion_rate,
+    )
+
+
+@router.get("/{task_id}", response_model=TaskWithDetails)
+async def get_task(
+    task_id: int,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Obtener una task específica con detalles"""
+
+    user_id = int(current_user["sub"])
+
     task = db.query(Task).filter(
         Task.id == task_id,
         Task.assigned_to_id == user_id
@@ -108,7 +205,103 @@ async def update_task(
     if not task:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Tarea no encontrada"
+            detail="Task no encontrada"
+        )
+
+    # Obtener información adicional
+    contact_name = None
+    deal_title = None
+    assigned_to_name = None
+
+    if task.contact_id:
+        contact = db.query(Contact).filter(Contact.id == task.contact_id).first()
+        if contact:
+            contact_name = contact.full_name
+
+    if task.deal_id:
+        deal = db.query(Deal).filter(Deal.id == task.deal_id).first()
+        if deal:
+            deal_title = deal.title
+
+    user = db.query(User).filter(User.id == task.assigned_to_id).first()
+    if user:
+        assigned_to_name = user.full_name
+
+    # Crear respuesta con detalles
+    task_dict = {
+        **task.__dict__,
+        "contact_name": contact_name,
+        "deal_title": deal_title,
+        "assigned_to_name": assigned_to_name,
+    }
+
+    return task_dict
+
+
+@router.post("/", response_model=TaskOut, status_code=status.HTTP_201_CREATED)
+async def create_task(
+    task_data: TaskCreate,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Crear nueva task"""
+
+    user_id = int(current_user["sub"])
+
+    # Verificar que el contacto existe si se proporciona
+    if task_data.contact_id:
+        contact = db.query(Contact).filter(
+            Contact.id == task_data.contact_id,
+            Contact.owner_id == user_id
+        ).first()
+        if not contact:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Contacto no encontrado"
+            )
+
+    # Verificar que el deal existe si se proporciona
+    if task_data.deal_id:
+        deal = db.query(Deal).filter(
+            Deal.id == task_data.deal_id,
+            Deal.owner_id == user_id
+        ).first()
+        if not deal:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Deal no encontrado"
+            )
+
+    # Crear la task
+    new_task = Task(**task_data.model_dump(), assigned_to_id=user_id)
+
+    db.add(new_task)
+    db.commit()
+    db.refresh(new_task)
+
+    return new_task
+
+
+@router.put("/{task_id}", response_model=TaskOut)
+async def update_task(
+    task_id: int,
+    task_data: TaskUpdate,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Actualizar task"""
+
+    user_id = int(current_user["sub"])
+
+    task = db.query(Task).filter(
+        Task.id == task_id,
+        Task.assigned_to_id == user_id
+    ).first()
+
+    if not task:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Task no encontrada"
         )
 
     # Actualizar campos
@@ -116,9 +309,13 @@ async def update_task(
     for key, value in update_data.items():
         setattr(task, key, value)
 
-    # Si se marca como completada, guardar fecha
-    if update_data.get("status") == TaskStatus.COMPLETED and not task.completed_at:
+    # Si se marca como COMPLETED, registrar fecha de completado
+    if task_data.status == TaskStatus.COMPLETED and not task.completed_at:
         task.completed_at = datetime.utcnow()
+
+    # Si se cambia de COMPLETED a otro estado, limpiar fecha de completado
+    if task_data.status and task_data.status != TaskStatus.COMPLETED:
+        task.completed_at = None
 
     db.commit()
     db.refresh(task)
@@ -132,9 +329,10 @@ async def delete_task(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    """Eliminar tarea"""
+    """Eliminar task"""
 
-    user_id = current_user.id
+    user_id = int(current_user["sub"])
+
     task = db.query(Task).filter(
         Task.id == task_id,
         Task.assigned_to_id == user_id
@@ -143,7 +341,7 @@ async def delete_task(
     if not task:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Tarea no encontrada"
+            detail="Task no encontrada"
         )
 
     db.delete(task)

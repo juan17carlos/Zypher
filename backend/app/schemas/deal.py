@@ -3,7 +3,6 @@
 from pydantic import BaseModel, Field, field_validator
 from datetime import datetime, date
 from typing import Optional, List
-from uuid import UUID
 
 from app.models.deal import DealStage, DealPriority, DealSource
 
@@ -36,7 +35,7 @@ class DealBase(BaseModel):
 
 # Schema para crear Deal
 class DealCreate(DealBase):
-    contact_id: UUID = Field(..., description="ID del contacto asociado")
+    contact_id: int = Field(..., description="ID del contacto asociado")
 
     @field_validator('probability')
     @classmethod
@@ -81,8 +80,8 @@ class DealUpdate(BaseModel):
 
 # Schema para respuesta de Deal
 class DealOut(DealBase):
-    id: UUID
-    contact_id: UUID
+    id: int
+    contact_id: int
     owner_id: int
     created_at: datetime
     updated_at: datetime
