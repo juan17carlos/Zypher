@@ -14,7 +14,6 @@ import {
   Briefcase,
   Target,
   User,
-  Building2,
 } from 'lucide-react'
 import dealsService from '@/services/dealsService'
 import contactsService from '@/services/contactsService'
@@ -80,7 +79,7 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
   const loadContacts = async () => {
     try {
       setLoadingContacts(true)
-      const response = await contactsService.getAllWithPagination({ page_size: 100 })
+      const response = await contactsService.getAllWithPagination({ limit: 100 })
       setContacts(response.items)
     } catch (err) {
       console.error('Error loading contacts:', err)
