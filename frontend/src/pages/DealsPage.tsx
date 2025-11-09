@@ -16,10 +16,10 @@ export default function DealsPage() {
     setModalOpen(true)
   }
 
-  const handleEdit = (deal: DealOut) => {
-    setSelectedDeal(deal)
-    setModalOpen(true)
-  }
+  // const _handleEdit = (deal: DealOut) => {
+  //   setSelectedDeal(deal)
+  //   setModalOpen(true)
+  // }
 
   const handleSuccess = () => {
     setRefreshTrigger((prev) => prev + 1)

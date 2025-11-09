@@ -5,17 +5,13 @@ import {
   Search,
   Filter,
   Plus,
-  MoreVertical,
   Edit2,
   Trash2,
-  Eye,
   CheckCircle2,
-  Clock,
   AlertTriangle,
   Calendar,
   User,
   Briefcase,
-  X,
 } from 'lucide-react'
 import tasksService from '@/services/tasksService'
 import type { TaskOut, TaskStatus, TaskPriority } from '@/types/task'
@@ -53,7 +49,7 @@ export default function TasksTable({
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [totalTasks, setTotalTasks] = useState(0)
-  const [pageSize, setPageSize] = useState(20)
+  const [pageSize] = useState(20)
 
   // Filtros
   const [search, setSearch] = useState('')
@@ -67,7 +63,7 @@ export default function TasksTable({
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
 
   // Menu contextual
-  const [activeMenu, setActiveMenu] = useState<number | null>(null)
+  // const [activeMenu, setActiveMenu] = useState<number | null>(null)
 
   // Cargar tasks
   useEffect(() => {

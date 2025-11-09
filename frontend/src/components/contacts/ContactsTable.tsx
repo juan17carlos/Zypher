@@ -5,7 +5,6 @@ import {
   Search,
   Filter,
   Download,
-  Upload,
   Plus,
   MoreVertical,
   Edit2,
@@ -42,7 +41,7 @@ export default function ContactsTable({
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [totalContacts, setTotalContacts] = useState(0)
-  const [pageSize, setPageSize] = useState(50)
+  const [pageSize] = useState(50)
 
   // Filtros
   const [search, setSearch] = useState('')

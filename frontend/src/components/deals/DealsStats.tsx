@@ -7,7 +7,6 @@ import {
   CheckCircle,
   XCircle,
   Target,
-  TrendingDown,
   AlertCircle,
   Loader2,
 } from 'lucide-react'
