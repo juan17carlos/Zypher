@@ -12,7 +12,7 @@ import type {
 } from '@/types/contact'
 
 class ContactService {
-  private readonly baseUrl = '/contacts'
+  private readonly baseUrl = '/contacts/'
 
   /**
    * Obtener lista paginada de contactos con filtros y estadísticas

@@ -163,7 +163,15 @@ export const CONTACT_SORT_OPTIONS = [
   { value: "updated_at", label: "Última Actualización" },
 ]
 
-export const INDUSTRIES_OPTIONS = Object.entries(IndustryLabels).map(([value, label]) => ({
-  value,
-  label,
-}))
+export const INDUSTRIES_OPTIONS = [
+  { value: IndustryTemplate.GENERIC, label: IndustryLabels[IndustryTemplate.GENERIC] },
+  { value: IndustryTemplate.REAL_ESTATE, label: IndustryLabels[IndustryTemplate.REAL_ESTATE] },
+  { value: IndustryTemplate.MEDICAL, label: IndustryLabels[IndustryTemplate.MEDICAL] },
+  { value: IndustryTemplate.AUTOMOTIVE, label: IndustryLabels[IndustryTemplate.AUTOMOTIVE] },
+  { value: IndustryTemplate.FITNESS, label: IndustryLabels[IndustryTemplate.FITNESS] },
+  { value: IndustryTemplate.RESTAURANT, label: IndustryLabels[IndustryTemplate.RESTAURANT] },
+  { value: IndustryTemplate.EDUCATION, label: IndustryLabels[IndustryTemplate.EDUCATION] },
+  { value: IndustryTemplate.SALON, label: IndustryLabels[IndustryTemplate.SALON] },
+  { value: IndustryTemplate.LEGAL, label: IndustryLabels[IndustryTemplate.LEGAL] },
+  { value: IndustryTemplate.CONSTRUCTION, label: IndustryLabels[IndustryTemplate.CONSTRUCTION] },
+]

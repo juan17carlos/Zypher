@@ -14,16 +14,16 @@ except ImportError:
     import enum
 
     class IndustryTemplate(str, enum.Enum):
-        GENERIC = "generic"
-        REAL_ESTATE = "real_estate"
-        MEDICAL = "medical"
-        AUTOMOTIVE = "automotive"
-        FITNESS = "fitness"
-        RESTAURANT = "restaurant"
-        EDUCATION = "education"
-        SALON = "salon"
-        LEGAL = "legal"
-        CONSTRUCTION = "construction"
+        GENERIC = "GENERIC"
+        REAL_ESTATE = "REAL_ESTATE"
+        MEDICAL = "MEDICAL"
+        AUTOMOTIVE = "AUTOMOTIVE"
+        FITNESS = "FITNESS"
+        RESTAURANT = "RESTAURANT"
+        EDUCATION = "EDUCATION"
+        SALON = "SALON"
+        LEGAL = "LEGAL"
+        CONSTRUCTION = "CONSTRUCTION"
 
     ENUMS_AVAILABLE = False
 
@@ -61,6 +61,14 @@ class ContactBase(BaseModel):
 
     # Estado
     is_active: bool = Field(default=True)
+
+    @field_validator("industry_template", mode="before")
+    @classmethod
+    def validate_industry_template(cls, v):
+        """Normaliza el valor del industry_template a mayúsculas"""
+        if isinstance(v, str):
+            return v.upper()
+        return v
 
     @field_validator("full_name")
     @classmethod
@@ -273,8 +281,8 @@ class ContactUpdate(BaseModel):
 
 class ContactOut(BaseModel):
     """Schema for reading contact data - API responses"""
-    id: UUID
-    owner_id: UUID
+    id: int
+    owner_id: int
     full_name: str
     email: Optional[str] = None
     phone: Optional[str] = None

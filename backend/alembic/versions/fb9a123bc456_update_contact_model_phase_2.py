@@ -21,11 +21,16 @@ def upgrade() -> None:
     op.add_column('contacts', sa.Column('mobile', sa.String(length=15), nullable=True))
     op.add_column('contacts', sa.Column('website', sa.String(length=200), nullable=True))
 
-    # Change notes column type from String to Text
-    op.alter_column('contacts', 'notes',
-                    existing_type=sa.String(),
-                    type_=sa.Text(),
-                    existing_nullable=True)
+    # Add notes column as Text (if it doesn't exist from initial migration, it will be added here)
+    # If it exists, this will be skipped by PostgreSQL
+    try:
+        op.add_column('contacts', sa.Column('notes', sa.Text(), nullable=True))
+    except:
+        # Column already exists, try to alter it
+        op.alter_column('contacts', 'notes',
+                        existing_type=sa.String(),
+                        type_=sa.Text(),
+                        existing_nullable=True)
 
 
 def downgrade() -> None:

@@ -9,33 +9,33 @@ from app.models.base import BaseModel
 
 class DealStage(str, enum.Enum):
     """Etapas del pipeline de ventas"""
-    LEAD = "lead"
-    CONTACTED = "contacted"
-    QUALIFIED = "qualified"
-    PROPOSAL = "proposal"
-    NEGOTIATION = "negotiation"
-    WON = "won"
-    LOST = "lost"
+    LEAD = "LEAD"
+    CONTACTED = "CONTACTED"
+    QUALIFIED = "QUALIFIED"
+    PROPOSAL = "PROPOSAL"
+    NEGOTIATION = "NEGOTIATION"
+    WON = "WON"
+    LOST = "LOST"
 
 
 class DealPriority(str, enum.Enum):
     """Prioridad del deal"""
-    LOW = "low"
-    MEDIUM = "medium"
-    HIGH = "high"
-    URGENT = "urgent"
+    LOW = "LOW"
+    MEDIUM = "MEDIUM"
+    HIGH = "HIGH"
+    URGENT = "URGENT"
 
 
 class DealSource(str, enum.Enum):
     """Fuente de origen del deal"""
-    WEBSITE = "website"
-    REFERRAL = "referral"
-    COLD_CALL = "cold_call"
-    SOCIAL_MEDIA = "social_media"
-    EMAIL_CAMPAIGN = "email_campaign"
-    EVENT = "event"
-    PARTNER = "partner"
-    OTHER = "other"
+    WEBSITE = "WEBSITE"
+    REFERRAL = "REFERRAL"
+    COLD_CALL = "COLD_CALL"
+    SOCIAL_MEDIA = "SOCIAL_MEDIA"
+    EMAIL_CAMPAIGN = "EMAIL_CAMPAIGN"
+    EVENT = "EVENT"
+    PARTNER = "PARTNER"
+    OTHER = "OTHER"
 
 
 class Deal(BaseModel):

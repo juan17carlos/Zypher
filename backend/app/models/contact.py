@@ -1,26 +1,24 @@
 # backend/app/models/contact.py - Modelo de Contactos con estándares del proyecto
 
-from sqlalchemy import Column, String, Boolean, ForeignKey, JSON, Enum as SQLEnum, Text
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, String, Boolean, ForeignKey, JSON, Enum as SQLEnum, Text, Integer
 from sqlalchemy.orm import relationship
 import enum
-import uuid
 
 from app.models.base import BaseModel
 
 
 class IndustryTemplate(str, enum.Enum):
     """Templates de industria disponibles"""
-    GENERIC = "generic"
-    REAL_ESTATE = "real_estate"
-    MEDICAL = "medical"
-    AUTOMOTIVE = "automotive"
-    FITNESS = "fitness"
-    RESTAURANT = "restaurant"
-    EDUCATION = "education"
-    SALON = "salon"
-    LEGAL = "legal"
-    CONSTRUCTION = "construction"
+    GENERIC = "GENERIC"
+    REAL_ESTATE = "REAL_ESTATE"
+    MEDICAL = "MEDICAL"
+    AUTOMOTIVE = "AUTOMOTIVE"
+    FITNESS = "FITNESS"
+    RESTAURANT = "RESTAURANT"
+    EDUCATION = "EDUCATION"
+    SALON = "SALON"
+    LEGAL = "LEGAL"
+    CONSTRUCTION = "CONSTRUCTION"
 
 
 class Contact(BaseModel):
@@ -30,12 +28,8 @@ class Contact(BaseModel):
     """
     __tablename__ = "contacts"
 
-    # ID primario (heredado de BaseModel pero redefinimos si BaseModel no lo tiene)
-    # Si BaseModel ya tiene id como UUID, comentar esta línea
-    # id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-
     # Relación con usuario propietario (quien creó el contacto)
-    owner_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True)
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
 
     # Información básica - anchos definidos según estándares
     full_name = Column(String(300), nullable=False, index=True)

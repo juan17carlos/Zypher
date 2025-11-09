@@ -74,11 +74,10 @@ async def register(user_data: UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/login")
 async def login(
-    response: Response,
     user_data: UserLogin,
     db: Session = Depends(get_db)
 ):
-    """Login de usuario"""
+    """Login de usuario - Retorna Bearer token"""
 
     # Buscar usuario
     user = db.query(User).filter(User.email == user_data.email).first()
@@ -103,16 +102,7 @@ async def login(
         expires_delta=access_token_expires
     )
 
-    # Setear cookie con el token
-    response.set_cookie(
-        key="access_token",
-        value=access_token,
-        httponly=settings.COOKIE_HTTPONLY,
-        secure=settings.COOKIE_SECURE,
-        samesite=settings.COOKIE_SAMESITE,
-        max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
-    )
-
+    # Retornar token en el response (NO usar cookies)
     return {
         "access_token": access_token,
         "token_type": "bearer",
@@ -121,12 +111,10 @@ async def login(
 
 
 @router.post("/logout")
-async def logout(response: Response):
+async def logout():
     """Logout de usuario"""
 
-    # Eliminar cookie
-    response.delete_cookie(key="access_token")
-
+    # Con Bearer tokens, el logout se maneja en el cliente
     return {"message": "Logout exitoso"}
 
 

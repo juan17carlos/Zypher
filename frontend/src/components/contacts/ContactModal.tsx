@@ -272,18 +272,18 @@ export default function ContactModal({
 
         {/* Modal Container - MAS GRANDE */}
         <div className="relative inline-block w-full max-w-6xl my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl">
-          {/* Header con gradiente */}
-          <div className="relative px-8 py-6 bg-gradient-to-r from-indigo-600 to-purple-600">
+          {/* Header con fondo blanco */}
+          <div className="relative px-8 py-6 bg-white border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-white bg-opacity-20 rounded-xl backdrop-blur-sm">
-                  <UserCircle2 className="w-8 h-8 text-white" />
+                <div className="p-3 bg-indigo-100 rounded-xl">
+                  <UserCircle2 className="w-8 h-8 text-indigo-600" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-white">
+                  <h3 className="text-2xl font-bold text-gray-900">
                     {contact ? 'Editar Contacto' : 'Nuevo Contacto'}
                   </h3>
-                  <p className="text-indigo-100 text-sm mt-1">
+                  <p className="text-gray-600 text-sm mt-1">
                     {contact
                       ? 'Actualiza la información del contacto'
                       : 'Completa los datos para crear un nuevo contacto'}
@@ -292,7 +292,7 @@ export default function ContactModal({
               </div>
               <button
                 onClick={onClose}
-                className="p-2 text-white hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
               >
                 <X className="w-6 h-6" />
               </button>

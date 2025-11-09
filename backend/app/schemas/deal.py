@@ -25,6 +25,14 @@ class DealBase(BaseModel):
     custom_fields: dict = Field(default_factory=dict, description="Campos personalizados")
     is_active: bool = Field(default=True, description="Estado activo")
 
+    @field_validator("stage", "priority", "source", mode="before")
+    @classmethod
+    def normalize_enums(cls, v):
+        """Normaliza enums a minúsculas"""
+        if isinstance(v, str):
+            return v.lower()
+        return v
+
 
 # Schema para crear Deal
 class DealCreate(DealBase):
@@ -61,6 +69,14 @@ class DealUpdate(BaseModel):
     tags: Optional[List[str]] = None
     custom_fields: Optional[dict] = None
     is_active: Optional[bool] = None
+
+    @field_validator("stage", "priority", "source", mode="before")
+    @classmethod
+    def normalize_enums(cls, v):
+        """Normaliza enums a minúsculas"""
+        if isinstance(v, str):
+            return v.lower()
+        return v
 
 
 # Schema para respuesta de Deal

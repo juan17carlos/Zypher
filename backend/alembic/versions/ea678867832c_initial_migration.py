@@ -44,7 +44,7 @@ def upgrade() -> None:
     sa.Column('state', sa.String(), nullable=True),
     sa.Column('country', sa.String(), nullable=True),
     sa.Column('zip_code', sa.String(), nullable=True),
-    sa.Column('industry_template', sa.Enum('GENERIC', 'REAL_ESTATE', 'MEDICAL', 'AUTOMOTIVE', 'FITNESS', 'RESTAURANT', 'EDUCATION', name='industrytemplate'), nullable=False),
+    sa.Column('industry_template', sa.Enum('GENERIC', 'REAL_ESTATE', 'MEDICAL', 'AUTOMOTIVE', 'FITNESS', 'RESTAURANT', 'EDUCATION', 'SALON', 'LEGAL', 'CONSTRUCTION', name='industrytemplate'), nullable=False),
     sa.Column('custom_fields', sa.JSON(), nullable=True),
     sa.Column('tags', sa.JSON(), nullable=True),
     sa.Column('owner_id', sa.Integer(), nullable=False),

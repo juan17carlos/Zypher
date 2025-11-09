@@ -7,8 +7,7 @@ from typing import Optional
 from datetime import datetime, timedelta
 from uuid import UUID
 
-from app.dependencies import get_db
-from app.core.security import get_current_user_from_token
+from app.dependencies import get_db, get_current_user
 from app.models.deal import Deal, DealStage, DealPriority, DealSource
 from app.models.contact import Contact
 from app.schemas.deal import (
@@ -38,11 +37,11 @@ async def get_deals_paginated(
     sort_by: str = Query("created_at", description="Campo para ordenar"),
     sort_order: str = Query("desc", description="Orden: asc o desc"),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user)
 ):
     """Obtener deals paginados con filtros y búsqueda"""
 
-    user_id = int(current_user["sub"])
+    user_id = current_user.id
 
     # Query base
     query = db.query(Deal).filter(Deal.owner_id == user_id)
@@ -104,11 +103,11 @@ async def get_deals_paginated(
 @router.get("/stats", response_model=DealStats)
 async def get_deals_stats(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user)
 ):
     """Obtener estadísticas del pipeline de ventas"""
 
-    user_id = int(current_user["sub"])
+    user_id = current_user.id
 
     # Query base
     query = db.query(Deal).filter(Deal.owner_id == user_id)
@@ -196,11 +195,11 @@ async def get_deals_stats(
 async def get_deal(
     deal_id: UUID,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user)
 ):
     """Obtener un deal específico con información del contacto"""
 
-    user_id = int(current_user["sub"])
+    user_id = current_user.id
 
     # Obtener deal con join al contacto
     deal = (
@@ -234,11 +233,11 @@ async def get_deal(
 async def create_deal(
     deal_data: DealCreate,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user)
 ):
     """Crear nuevo deal"""
 
-    user_id = int(current_user["sub"])
+    user_id = current_user.id
 
     # Verificar que el contacto existe y pertenece al usuario
     contact = (
@@ -268,11 +267,11 @@ async def update_deal(
     deal_id: UUID,
     deal_data: DealUpdate,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user)
 ):
     """Actualizar deal"""
 
-    user_id = int(current_user["sub"])
+    user_id = current_user.id
 
     deal = db.query(Deal).filter(
         Deal.id == deal_id,
@@ -311,11 +310,11 @@ async def update_deal_stage(
     deal_id: UUID,
     stage_data: DealStageUpdate,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user)
 ):
     """Actualizar la etapa del deal en el pipeline"""
 
-    user_id = int(current_user["sub"])
+    user_id = current_user.id
 
     deal = db.query(Deal).filter(
         Deal.id == deal_id,
@@ -357,11 +356,11 @@ async def update_deal_stage(
 async def delete_deal(
     deal_id: UUID,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user)
 ):
     """Eliminar deal"""
 
-    user_id = int(current_user["sub"])
+    user_id = current_user.id
 
     deal = db.query(Deal).filter(
         Deal.id == deal_id,
@@ -383,11 +382,11 @@ async def delete_deal(
 @router.get("/pipeline/summary")
 async def get_pipeline_summary(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user)
 ):
     """Obtener resumen del pipeline por etapas (para vista Kanban)"""
 
-    user_id = int(current_user["sub"])
+    user_id = current_user.id
 
     # Obtener todos los deals agrupados por etapa
     pipeline_summary = {}

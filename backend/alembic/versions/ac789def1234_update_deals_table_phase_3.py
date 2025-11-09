@@ -8,7 +8,6 @@ Create Date: 2025-11-08 23:40:00.000000
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
-import uuid
 
 # revision identifiers, used by Alembic.
 revision = 'ac789def1234'
@@ -20,36 +19,52 @@ depends_on = None
 def upgrade() -> None:
     # Crear enum types si no existen
     deal_stage_enum = postgresql.ENUM(
-        'lead', 'contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost',
+        'LEAD', 'CONTACTED', 'QUALIFIED', 'PROPOSAL', 'NEGOTIATION', 'WON', 'LOST',
         name='dealstage',
         create_type=False
     )
 
     deal_priority_enum = postgresql.ENUM(
-        'low', 'medium', 'high', 'urgent',
-        name='dealpriority'
+        'LOW', 'MEDIUM', 'HIGH', 'URGENT',
+        name='dealpriority',
+        create_type=False
     )
 
     deal_source_enum = postgresql.ENUM(
-        'website', 'referral', 'cold_call', 'social_media', 'email_campaign', 'event', 'partner', 'other',
-        name='dealsource'
+        'WEBSITE', 'REFERRAL', 'COLD_CALL', 'SOCIAL_MEDIA', 'EMAIL_CAMPAIGN', 'EVENT', 'PARTNER', 'OTHER',
+        name='dealsource',
+        create_type=False
     )
 
-    # Crear tipos enum
-    deal_priority_enum.create(op.get_bind(), checkfirst=True)
-    deal_source_enum.create(op.get_bind(), checkfirst=True)
+    # Crear tipos enum solo si no existen
+    connection = op.get_bind()
+
+    # Check and create dealpriority
+    result = connection.execute(sa.text("SELECT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'dealpriority')")).scalar()
+    if not result:
+        connection.execute(sa.text("CREATE TYPE dealpriority AS ENUM ('LOW', 'MEDIUM', 'HIGH', 'URGENT')"))
+
+    # Check and create dealsource
+    result = connection.execute(sa.text("SELECT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'dealsource')")).scalar()
+    if not result:
+        connection.execute(sa.text("CREATE TYPE dealsource AS ENUM ('WEBSITE', 'REFERRAL', 'COLD_CALL', 'SOCIAL_MEDIA', 'EMAIL_CAMPAIGN', 'EVENT', 'PARTNER', 'OTHER')"))
+
+    # Check and create dealstage
+    result = connection.execute(sa.text("SELECT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'dealstage')")).scalar()
+    if not result:
+        connection.execute(sa.text("CREATE TYPE dealstage AS ENUM ('LEAD', 'CONTACTED', 'QUALIFIED', 'PROPOSAL', 'NEGOTIATION', 'WON', 'LOST')"))
 
     # Crear tabla temporal
     op.create_table(
         'deals_new',
-        sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4),
+        sa.Column('id', sa.Integer, primary_key=True, autoincrement=True),
         sa.Column('title', sa.String(300), nullable=False),
         sa.Column('description', sa.Text, nullable=True),
         sa.Column('value', sa.Float, nullable=False, default=0.0),
         sa.Column('currency', sa.String(10), nullable=False, default='USD'),
-        sa.Column('stage', deal_stage_enum, nullable=False, default='lead'),
+        sa.Column('stage', deal_stage_enum, nullable=False, default='LEAD'),
         sa.Column('probability', sa.Integer, nullable=False, default=0),
-        sa.Column('priority', deal_priority_enum, nullable=False, default='medium'),
+        sa.Column('priority', deal_priority_enum, nullable=False, default='MEDIUM'),
         sa.Column('source', deal_source_enum, nullable=True),
         sa.Column('expected_close_date', sa.Date, nullable=True),
         sa.Column('actual_close_date', sa.Date, nullable=True),
@@ -57,7 +72,7 @@ def upgrade() -> None:
         sa.Column('tags', postgresql.JSON, nullable=True),
         sa.Column('custom_fields', postgresql.JSON, nullable=True),
         sa.Column('is_active', sa.Boolean, nullable=False, default=True),
-        sa.Column('contact_id', postgresql.UUID(as_uuid=True), sa.ForeignKey('contacts.id'), nullable=False),
+        sa.Column('contact_id', sa.Integer, sa.ForeignKey('contacts.id'), nullable=False),
         sa.Column('owner_id', sa.Integer, sa.ForeignKey('users.id'), nullable=False),
         sa.Column('created_at', sa.DateTime, nullable=False, server_default=sa.text('now()')),
         sa.Column('updated_at', sa.DateTime, nullable=False, server_default=sa.text('now()'), onupdate=sa.text('now()')),
@@ -78,25 +93,27 @@ def upgrade() -> None:
     inspector = sa.inspect(connection)
 
     if 'deals' in inspector.get_table_names():
-        # Copiar datos existentes (esto asume que deals vieja tiene id integer)
+        # Copiar datos existentes
         # Solo copiamos si hay datos
         op.execute("""
             INSERT INTO deals_new (title, description, value, currency, stage, probability,
                                    expected_close_date, contact_id, owner_id, created_at, updated_at,
                                    priority, source, tags, custom_fields, is_active)
             SELECT title, description, value, currency, stage::text::dealstage, probability,
-                   expected_close_date,
-                   (SELECT id FROM contacts WHERE contacts.id::text = deals.contact_id::text LIMIT 1),
-                   owner_id, created_at, updated_at,
-                   'medium'::dealpriority, 'other'::dealsource, '[]'::json, '{}'::json, true
+                   expected_close_date, contact_id, owner_id, created_at, updated_at,
+                   'MEDIUM'::dealpriority, 'OTHER'::dealsource, '[]'::json, '{}'::json, true
             FROM deals
         """)
 
-        # Eliminar tabla vieja
-        op.drop_table('deals')
+        # Eliminar tabla vieja (CASCADE para eliminar foreign keys dependientes)
+        connection.execute(sa.text("DROP TABLE deals CASCADE"))
 
     # Renombrar tabla nueva
     op.rename_table('deals_new', 'deals')
+
+    # Recrear foreign keys que fueron eliminadas con CASCADE
+    connection.execute(sa.text("ALTER TABLE notes ADD CONSTRAINT notes_deal_id_fkey FOREIGN KEY (deal_id) REFERENCES deals(id)"))
+    connection.execute(sa.text("ALTER TABLE tasks ADD CONSTRAINT tasks_deal_id_fkey FOREIGN KEY (deal_id) REFERENCES deals(id)"))
 
 
 def downgrade() -> None:
@@ -123,7 +140,7 @@ def downgrade() -> None:
         INSERT INTO deals_old (title, description, value, currency, stage, probability,
                                expected_close_date, custom_fields, contact_id, owner_id, created_at, updated_at)
         SELECT title, description, value, currency, stage::text, probability,
-               expected_close_date, custom_fields, contact_id::text::integer, owner_id, created_at, updated_at
+               expected_close_date, custom_fields, contact_id, owner_id, created_at, updated_at
         FROM deals
     """)
 

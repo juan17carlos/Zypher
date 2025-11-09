@@ -21,11 +21,8 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     ALGORITHM: str = "HS256"
 
-    # CORS
-    BACKEND_CORS_ORIGINS: List[str] = [
-        "http://localhost:5173",
-        "http://localhost:3000",
-    ]
+    # CORS - Se carga dinámicamente desde get_cors_origins()
+    BACKEND_CORS_ORIGINS: List[str] = []
 
     # Cookie Settings
     COOKIE_SECURE: bool = False
@@ -51,9 +48,51 @@ class Settings(BaseSettings):
     def IS_PRODUCTION(self) -> bool:
         return self.ENVIRONMENT == "production"
 
+    def get_cors_origins(self) -> List[str]:
+        """
+        Obtiene los orígenes CORS permitidos según el entorno.
+        Patrón igual al proyecto de facturación electrónica.
+        """
+        if self.IS_PRODUCTION:
+            env_origins = os.getenv("CORS_ORIGINS_PRODUCTION")
+            if env_origins:
+                return [origin.strip() for origin in env_origins.split(',') if origin.strip()]
+        else:
+            env_origins = os.getenv("CORS_ORIGINS_DEVELOPMENT")
+            if env_origins:
+                return [origin.strip() for origin in env_origins.split(',') if origin.strip()]
+
+        # Fallback por defecto
+        base_origins = []
+
+        if self.IS_PRODUCTION:
+            base_origins = [
+                "https://app.zypher.ec",
+                "https://admin.zypher.ec",
+                "https://www.zypher.ec",
+            ]
+        else:
+            base_origins = [
+                "http://localhost:5173",
+                "http://localhost:5174",
+                "http://localhost:3000",
+                "http://127.0.0.1:5173",
+                "http://127.0.0.1:5174",
+            ]
+
+        return base_origins
+
+    def __init__(self, **data):
+        super().__init__(**data)
+
+        # Cargar CORS dinámicamente al inicializar
+        if not self.BACKEND_CORS_ORIGINS:
+            self.BACKEND_CORS_ORIGINS = self.get_cors_origins()
+
     class Config:
         env_file = ".env"
         case_sensitive = True
+        extra = "allow"  # Permitir campos extras desde .env
 
 
 settings = Settings()

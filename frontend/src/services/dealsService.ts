@@ -1,6 +1,6 @@
 // frontend/src/services/dealsService.ts - Servicio API para Deals (Phase 3)
 
-import api from './api'
+import api from '@/lib/axios'
 import type {
   DealCreate,
   DealUpdate,
@@ -16,7 +16,7 @@ import type {
 } from '@/types/deal'
 
 class DealsService {
-  private baseURL = '/deals'
+  private baseURL = '/deals/'
 
   /**
    * Obtener deals paginados con filtros

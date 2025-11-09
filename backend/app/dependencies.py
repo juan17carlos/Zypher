@@ -58,31 +58,42 @@ async def get_current_user(
     db: Session = Depends(get_db)
 ) -> User:
     """
-    Obtiene el usuario actual desde el token (cookies o Bearer)
+    Obtiene el usuario actual desde el token Bearer en el header Authorization
     """
+    from app.core.security import decode_access_token
+
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="No se pudieron validar las credenciales de autenticación",
         headers={"WWW-Authenticate": "Bearer"},
     )
 
-    # Obtener datos del token
-    user_data = get_current_user_from_token(request)
+    # Obtener token del header Authorization
+    authorization = request.headers.get("Authorization")
+    if not authorization:
+        raise credentials_exception
+
+    # Verificar formato "Bearer <token>"
+    parts = authorization.split()
+    if len(parts) != 2 or parts[0].lower() != "bearer":
+        raise credentials_exception
+
+    token = parts[1]
+
+    # Decodificar token
+    user_data = decode_access_token(token)
     if not user_data:
         raise credentials_exception
 
-    user_id = user_data.get("user_id")
+    user_id = user_data.get("sub")
     if not user_id:
         raise credentials_exception
 
     # Buscar usuario en la base de datos
-    user = None
-
     try:
-        # Intentar como UUID primero
-        import uuid
-        user_uuid = uuid.UUID(user_id)
-        user = db.query(User).filter(User.id == user_uuid).first()
+        # Intentar como int para el ID
+        user_id_int = int(user_id)
+        user = db.query(User).filter(User.id == user_id_int).first()
     except (ValueError, TypeError):
         raise credentials_exception
 

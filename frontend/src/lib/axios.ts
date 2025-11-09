@@ -6,7 +6,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // Para enviar cookies
+  withCredentials: false, // NO usar cookies, solo Bearer tokens
 })
 
 // Interceptor para agregar token en cada request

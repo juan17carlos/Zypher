@@ -7,9 +7,9 @@ from app.models.base import BaseModel
 
 class UserRole(str, enum.Enum):
     """Roles de usuario en el sistema"""
-    ADMIN = "admin"
-    USER = "user"
-    VIEWER = "viewer"
+    ADMIN = "ADMIN"
+    USER = "USER"
+    VIEWER = "VIEWER"
 
 
 class User(BaseModel):

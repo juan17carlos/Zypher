@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from datetime import datetime
 
 from app.core.database import get_db
-from app.core.security import get_current_user_from_token
+from app.dependencies import get_current_user
 from app.models.task import Task, TaskStatus, TaskPriority
 
 router = APIRouter()
@@ -54,11 +54,11 @@ async def get_tasks(
     limit: int = 100,
     status_filter: Optional[TaskStatus] = None,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user)
 ):
     """Obtener lista de tareas"""
 
-    user_id = int(current_user["sub"])
+    user_id = current_user.id
     query = db.query(Task).filter(Task.assigned_to_id == user_id)
 
     if status_filter:
@@ -72,11 +72,11 @@ async def get_tasks(
 async def create_task(
     task_data: TaskCreate,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user)
 ):
     """Crear nueva tarea"""
 
-    user_id = int(current_user["sub"])
+    user_id = current_user.id
 
     new_task = Task(
         **task_data.model_dump(),
@@ -95,11 +95,11 @@ async def update_task(
     task_id: int,
     task_data: TaskUpdate,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user)
 ):
     """Actualizar tarea"""
 
-    user_id = int(current_user["sub"])
+    user_id = current_user.id
     task = db.query(Task).filter(
         Task.id == task_id,
         Task.assigned_to_id == user_id
@@ -130,11 +130,11 @@ async def update_task(
 async def delete_task(
     task_id: int,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user)
 ):
     """Eliminar tarea"""
 
-    user_id = int(current_user["sub"])
+    user_id = current_user.id
     task = db.query(Task).filter(
         Task.id == task_id,
         Task.assigned_to_id == user_id

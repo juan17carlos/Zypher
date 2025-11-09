@@ -32,10 +32,12 @@ async def catch_exceptions_middleware(request: Request, call_next):
             content={"detail": "Error interno del servidor"}
         )
 
-# Configurar CORS
+# Configurar CORS - MODO DUAL: dinámico desde settings (igual que facturación)
+origins = settings.get_cors_origins()
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.BACKEND_CORS_ORIGINS,
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
