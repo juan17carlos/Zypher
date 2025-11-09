@@ -8,6 +8,13 @@ import ContactsPage from './pages/ContactsPage'
 import DealsPage from './pages/DealsPage'
 import TasksPage from './pages/TasksPage'
 
+// Demo
+import DemoIndex from './pages/DemoIndex'
+import DesignShowcase from './components/demo/DesignShowcase'
+import Bitrix24Replica from './components/demo/Bitrix24Replica'
+import KanbanBoard from './components/demo/KanbanBoard'
+import FormComponents from './components/demo/FormComponents'
+
 // Layout
 import Layout from './components/Layout'
 
@@ -18,6 +25,13 @@ function App() {
     <Routes>
       {/* Rutas públicas */}
       <Route path="/login" element={<LoginPage />} />
+
+      {/* Demo de diseño (acceso público para ver los efectos) */}
+      <Route path="/demos" element={<DemoIndex />} />
+      <Route path="/design-showcase" element={<DesignShowcase />} />
+      <Route path="/bitrix24-replica" element={<Bitrix24Replica />} />
+      <Route path="/kanban-demo" element={<KanbanBoard />} />
+      <Route path="/form-components" element={<FormComponents />} />
 
       {/* Rutas protegidas */}
       <Route

@@ -1,19 +1,19 @@
 // frontend/src/types/deal.ts - Tipos TypeScript para Deals (Phase 3)
 
-// Enums para Deal
-export type DealStage = 'lead' | 'contacted' | 'qualified' | 'proposal' | 'negotiation' | 'won' | 'lost'
+// Enums para Deal (MAYÚSCULAS para coincidir con backend)
+export type DealStage = 'LEAD' | 'CONTACTED' | 'QUALIFIED' | 'PROPOSAL' | 'NEGOTIATION' | 'WON' | 'LOST'
 
-export type DealPriority = 'low' | 'medium' | 'high' | 'urgent'
+export type DealPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
 
 export type DealSource =
-  | 'website'
-  | 'referral'
-  | 'cold_call'
-  | 'social_media'
-  | 'email_campaign'
-  | 'event'
-  | 'partner'
-  | 'other'
+  | 'WEBSITE'
+  | 'REFERRAL'
+  | 'COLD_CALL'
+  | 'SOCIAL_MEDIA'
+  | 'EMAIL_CAMPAIGN'
+  | 'EVENT'
+  | 'PARTNER'
+  | 'OTHER'
 
 // Interface base para Deal
 export interface DealBase {
@@ -104,33 +104,33 @@ export type PipelineSummary = Record<DealStage, PipelineStageData>
 
 // Labels para las etapas
 export const StageLabels: Record<DealStage, string> = {
-  lead: 'Lead',
-  contacted: 'Contactado',
-  qualified: 'Calificado',
-  proposal: 'Propuesta',
-  negotiation: 'Negociación',
-  won: 'Ganado',
-  lost: 'Perdido',
+  LEAD: 'Lead',
+  CONTACTED: 'Contactado',
+  QUALIFIED: 'Calificado',
+  PROPOSAL: 'Propuesta',
+  NEGOTIATION: 'Negociación',
+  WON: 'Ganado',
+  LOST: 'Perdido',
 }
 
 // Labels para prioridades
 export const PriorityLabels: Record<DealPriority, string> = {
-  low: 'Baja',
-  medium: 'Media',
-  high: 'Alta',
-  urgent: 'Urgente',
+  LOW: 'Baja',
+  MEDIUM: 'Media',
+  HIGH: 'Alta',
+  URGENT: 'Urgente',
 }
 
 // Labels para fuentes
 export const SourceLabels: Record<DealSource, string> = {
-  website: 'Sitio Web',
-  referral: 'Referido',
-  cold_call: 'Llamada en Frío',
-  social_media: 'Redes Sociales',
-  email_campaign: 'Campaña Email',
-  event: 'Evento',
-  partner: 'Socio/Partner',
-  other: 'Otro',
+  WEBSITE: 'Sitio Web',
+  REFERRAL: 'Referido',
+  COLD_CALL: 'Llamada en Frío',
+  SOCIAL_MEDIA: 'Redes Sociales',
+  EMAIL_CAMPAIGN: 'Campaña Email',
+  EVENT: 'Evento',
+  PARTNER: 'Socio/Partner',
+  OTHER: 'Otro',
 }
 
 // Opciones para selects
@@ -151,30 +151,30 @@ export const SOURCE_OPTIONS = Object.entries(SourceLabels).map(([value, label]) 
 
 // Colores para etapas (para UI)
 export const StageColors: Record<DealStage, string> = {
-  lead: 'gray',
-  contacted: 'blue',
-  qualified: 'cyan',
-  proposal: 'purple',
-  negotiation: 'orange',
-  won: 'green',
-  lost: 'red',
+  LEAD: 'gray',
+  CONTACTED: 'blue',
+  QUALIFIED: 'cyan',
+  PROPOSAL: 'purple',
+  NEGOTIATION: 'orange',
+  WON: 'green',
+  LOST: 'red',
 }
 
 // Colores para prioridades
 export const PriorityColors: Record<DealPriority, string> = {
-  low: 'gray',
-  medium: 'blue',
-  high: 'orange',
-  urgent: 'red',
+  LOW: 'gray',
+  MEDIUM: 'blue',
+  HIGH: 'orange',
+  URGENT: 'red',
 }
 
 // Probabilidades sugeridas por etapa
 export const StageProbabilities: Record<DealStage, number> = {
-  lead: 10,
-  contacted: 20,
-  qualified: 40,
-  proposal: 60,
-  negotiation: 80,
-  won: 100,
-  lost: 0,
+  LEAD: 10,
+  CONTACTED: 20,
+  QUALIFIED: 40,
+  PROPOSAL: 60,
+  NEGOTIATION: 80,
+  WON: 100,
+  LOST: 0,
 }
