@@ -21,6 +21,8 @@ interface SelectDropdownProps {
   searchable?: boolean
   label?: string
   required?: boolean
+  error?: string
+  disabled?: boolean
 }
 
 export default function SelectDropdown({
@@ -31,6 +33,8 @@ export default function SelectDropdown({
   searchable = false,
   label,
   required = false,
+  error: _error,
+  disabled: _disabled = false,
 }: SelectDropdownProps) {
   const [searchTerm, setSearchTerm] = useState('')
 
@@ -121,7 +125,7 @@ export default function SelectDropdown({
                           }`
                         }
                       >
-                        {({ selected, active }) => (
+                        {({ selected }) => (
                           <>
                             <div className="flex items-center gap-2">
                               {option.icon && (

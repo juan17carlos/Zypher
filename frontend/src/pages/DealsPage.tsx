@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
-import DealsStats from '@/components/deals/DealsStats'
 import DealsKanban from '@/components/deals/DealsKanban'
 import DealModal from '@/components/deals/DealModal'
 import AnimatedButton from '@/components/ui/AnimatedButton'

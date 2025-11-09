@@ -31,6 +31,7 @@ import {
   Building,
   Loader2,
   AlertCircle,
+  MessageCircle,
 } from 'lucide-react'
 import dealsService from '@/services/dealsService'
 import type { DealOut } from '@/types/deal'
@@ -124,13 +125,33 @@ function DealCard({ deal, onEdit }: { deal: DealOut; onEdit: (deal: DealOut) => 
       </div>
 
       {/* Quick actions */}
-      <div className="flex items-center gap-2 pt-3 border-t border-gray-100">
+      <div className="flex items-center gap-1 pt-3 border-t border-gray-100">
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
-          className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+          className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+          title="WhatsApp"
+          onClick={(e) => {
+            e.stopPropagation()
+            if (deal.contact?.phone || deal.contact?.mobile) {
+              const phone = (deal.contact.phone || deal.contact.mobile)?.replace(/\D/g, '')
+              window.open(`https://wa.me/${phone}`, '_blank')
+            }
+          }}
+        >
+          <MessageCircle className="w-4 h-4" />
+        </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
           title="Llamar"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation()
+            if (deal.contact?.phone || deal.contact?.mobile) {
+              window.location.href = `tel:${deal.contact.phone || deal.contact.mobile}`
+            }
+          }}
         >
           <Phone className="w-4 h-4" />
         </motion.button>
@@ -139,7 +160,12 @@ function DealCard({ deal, onEdit }: { deal: DealOut; onEdit: (deal: DealOut) => 
           whileTap={{ scale: 0.9 }}
           className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
           title="Enviar email"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation()
+            if (deal.contact?.email) {
+              window.location.href = `mailto:${deal.contact.email}`
+            }
+          }}
         >
           <Mail className="w-4 h-4" />
         </motion.button>
@@ -292,13 +318,13 @@ export default function DealsKanban({ onEditDeal, onCreateDeal, refreshTrigger }
       return
     }
 
-    const dealId = parseInt(active.id as string)
+    const dealId = active.id as string
     const newStage = over.id as string
 
     // Find the deal
     let deal: DealOut | undefined
     for (const column of columns) {
-      deal = column.deals.find((d) => d.id === dealId)
+      deal = column.deals.find((d) => d.id.toString() === dealId)
       if (deal) break
     }
 
@@ -309,7 +335,7 @@ export default function DealsKanban({ onEditDeal, onCreateDeal, refreshTrigger }
 
     // Update deal stage
     try {
-      await dealsService.update(dealId, { stage: newStage as any })
+      await dealsService.update(deal.id, { stage: newStage as any })
       await loadDeals() // Reload deals
     } catch (err) {
       console.error('Error updating deal stage:', err)

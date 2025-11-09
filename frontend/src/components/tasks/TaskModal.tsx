@@ -4,15 +4,11 @@ import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   X,
-  Calendar,
   AlertCircle,
   Loader2,
   Save,
   CheckCircle2,
-  User,
-  Briefcase,
   FileText,
-  Clock,
 } from 'lucide-react'
 import tasksService from '@/services/tasksService'
 import contactsService from '@/services/contactsService'
@@ -364,7 +360,7 @@ export default function TaskModal({
                   timeFormat="HH:mm"
                   timeIntervals={15}
                   dateFormat="dd/MM/yyyy HH:mm"
-                  placeholderText="Selecciona fecha y hora"
+                  placeholder="Selecciona fecha y hora"
                 />
               </div>
 

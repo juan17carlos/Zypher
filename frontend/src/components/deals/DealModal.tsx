@@ -50,7 +50,7 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([])
   const [touched, setTouched] = useState<Set<string>>(new Set())
   const [contacts, setContacts] = useState<ContactOut[]>([])
-  const [loadingContacts, setLoadingContacts] = useState(false)
+  const [_loadingContacts, setLoadingContacts] = useState(false)
 
   const [formData, setFormData] = useState<DealCreate>({
     title: '',
@@ -460,7 +460,6 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
                         }))}
                         placeholder="Selecciona un contacto"
                         searchable
-                        disabled={loadingContacts}
                         error={getFieldError('contact_id')}
                       />
                       {getFieldError('contact_id') && (
@@ -611,11 +610,11 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
                             expected_close_date: date ? date.toISOString().split('T')[0] : null,
                           })
                         }
-                        placeholderText="Selecciona una fecha"
+                        placeholder="Selecciona una fecha"
                       />
                     </div>
 
-                    {(formData.stage === 'lost' || formData.stage === 'won') && (
+                    {(formData.stage === 'LOST' || formData.stage === 'WON') && (
                       <div>
                         <label className="block text-sm font-semibold text-gray-900 mb-2">
                           Fecha Real de Cierre
@@ -628,12 +627,12 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
                               actual_close_date: date ? date.toISOString().split('T')[0] : null,
                             })
                           }
-                          placeholderText="Selecciona una fecha"
+                          placeholder="Selecciona una fecha"
                         />
                       </div>
                     )}
 
-                    {formData.stage === 'lost' && (
+                    {formData.stage === 'LOST' && (
                       <div>
                         <label className="block text-sm font-semibold text-gray-900 mb-2">
                           Motivo de Pérdida

@@ -1,7 +1,6 @@
 // frontend/src/components/ui/IconBadge.tsx
 // Badge con icono como Bitrix24 (esos círculos con iconos de colores)
 
-import { ReactNode } from 'react'
 import { LucideIcon } from 'lucide-react'
 
 interface IconBadgeProps {

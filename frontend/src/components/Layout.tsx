@@ -1,14 +1,15 @@
 import { Outlet, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
 import { useAuthStore } from '@/stores/authStore'
 import { authService } from '@/services/authService'
-import { Search, Bell, ChevronDown, Plus } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { Search, Bell, ChevronDown, Plus, Briefcase, User, CheckSquare } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 import SidebarBitrix from '@/components/ui/SidebarBitrix'
-import AnimatedButton from '@/components/ui/AnimatedButton'
 
 export default function Layout() {
   const { user, clearAuth } = useAuthStore()
   const navigate = useNavigate()
+  const [showQuickActions, setShowQuickActions] = useState(false)
 
   const handleLogout = async () => {
     try {
@@ -20,6 +21,17 @@ export default function Layout() {
       clearAuth()
       navigate('/login')
     }
+  }
+
+  const quickActions = [
+    { icon: Briefcase, label: 'Nueva Negociación', href: '/deals', action: 'create-deal' },
+    { icon: User, label: 'Nuevo Contacto', href: '/contacts', action: 'create-contact' },
+    { icon: CheckSquare, label: 'Nueva Tarea', href: '/tasks', action: 'create-task' },
+  ]
+
+  const handleQuickAction = (action: string, href: string) => {
+    navigate(href, { state: { action } })
+    setShowQuickActions(false)
   }
 
   return (
@@ -37,9 +49,55 @@ export default function Layout() {
               <div className="flex items-center gap-4">
                 <h1 className="text-2xl font-bold text-gray-900">Zypher CRM</h1>
 
-                <AnimatedButton variant="primary" size="sm" icon={<Plus className="w-4 h-4" />}>
-                  Nuevo
-                </AnimatedButton>
+                {/* Quick Actions Dropdown */}
+                <div className="relative">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setShowQuickActions(!showQuickActions)}
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg shadow-md hover:shadow-lg transition-all font-medium"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Nuevo
+                    <ChevronDown className={`w-4 h-4 transition-transform ${showQuickActions ? 'rotate-180' : ''}`} />
+                  </motion.button>
+
+                  {/* Dropdown Menu */}
+                  <AnimatePresence>
+                    {showQuickActions && (
+                      <>
+                        <div
+                          className="fixed inset-0 z-10"
+                          onClick={() => setShowQuickActions(false)}
+                        />
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.2 }}
+                          className="absolute left-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-20"
+                        >
+                          {quickActions.map((item, index) => {
+                            const Icon = item.icon
+                            return (
+                              <motion.button
+                                key={index}
+                                whileHover={{ backgroundColor: '#f3f4f6' }}
+                                onClick={() => handleQuickAction(item.action, item.href)}
+                                className="w-full flex items-center gap-3 px-4 py-3 text-left transition-colors"
+                              >
+                                <div className="p-2 bg-indigo-50 rounded-lg">
+                                  <Icon className="w-5 h-5 text-indigo-600" />
+                                </div>
+                                <span className="font-medium text-gray-900">{item.label}</span>
+                              </motion.button>
+                            )
+                          })}
+                        </motion.div>
+                      </>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
 
               {/* Right side */}

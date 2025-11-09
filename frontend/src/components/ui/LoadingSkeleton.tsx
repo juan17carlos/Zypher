@@ -14,11 +14,6 @@ export default function LoadingSkeleton({
   lines = 1,
   className = '',
 }: LoadingSkeletonProps) {
-  const shimmer = {
-    initial: { backgroundPosition: '200% 0' },
-    animate: { backgroundPosition: '-200% 0' },
-  }
-
   const baseStyles =
     'bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 bg-[length:200%_100%] animate-pulse rounded'
 

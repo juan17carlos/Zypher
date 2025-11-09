@@ -1,10 +1,10 @@
 // frontend/src/components/ui/DatePicker.tsx
 // Date Picker EXACTO como Bitrix24
 
-import { useState, forwardRef } from 'react'
+import { forwardRef } from 'react'
 import ReactDatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import { Calendar, ChevronLeft, ChevronRight, Clock } from 'lucide-react'
+import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { motion } from 'framer-motion'
@@ -18,6 +18,9 @@ interface DatePickerProps {
   required?: boolean
   minDate?: Date
   maxDate?: Date
+  timeFormat?: string
+  timeIntervals?: number
+  dateFormat?: string
 }
 
 // Custom Input Component
@@ -52,7 +55,6 @@ export default function DatePicker({
   minDate,
   maxDate,
 }: DatePickerProps) {
-  const [isOpen, setIsOpen] = useState(false)
 
   return (
     <div className="w-full">
@@ -67,8 +69,6 @@ export default function DatePicker({
         <ReactDatePicker
           selected={selected}
           onChange={onChange}
-          onCalendarOpen={() => setIsOpen(true)}
-          onCalendarClose={() => setIsOpen(false)}
           showTimeSelect={showTimeSelect}
           timeFormat="HH:mm"
           timeIntervals={15}

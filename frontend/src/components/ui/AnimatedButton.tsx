@@ -1,11 +1,11 @@
 // frontend/src/components/ui/AnimatedButton.tsx
 // Botón con efectos como Bitrix24
 
-import { motion } from 'framer-motion'
-import { ReactNode, ButtonHTMLAttributes } from 'react'
+import { motion, HTMLMotionProps } from 'framer-motion'
+import { ReactNode } from 'react'
 import { Loader2 } from 'lucide-react'
 
-interface AnimatedButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface AnimatedButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
   children: ReactNode
   variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'ghost'
   size?: 'sm' | 'md' | 'lg'

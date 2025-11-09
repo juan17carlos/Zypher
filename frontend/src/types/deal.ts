@@ -48,6 +48,20 @@ export interface DealOut extends DealBase {
   owner_id: number
   created_at: string
   updated_at: string
+  // Opcional: información del contacto y owner cuando se incluyen
+  contact?: {
+    id: string
+    full_name: string
+    email?: string | null
+    phone?: string | null
+    mobile?: string | null
+    company?: string | null
+  }
+  owner?: {
+    id: number
+    full_name: string
+    email: string
+  }
 }
 
 // Interface para Deal con información del contacto
