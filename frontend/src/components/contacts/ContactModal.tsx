@@ -755,13 +755,15 @@ export default function ContactModal({
                           className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                           placeholder="Escribe un tag y presiona Enter"
                         />
-                        <button
+                        <motion.button
                           type="button"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
                           onClick={handleAddTag}
-                          className="px-6 py-3 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors"
+                          className="px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg transition-all"
                         >
                           Agregar
-                        </button>
+                        </motion.button>
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {formData.tags && formData.tags.length > 0 ? (

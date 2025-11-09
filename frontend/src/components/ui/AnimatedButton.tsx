@@ -26,8 +26,8 @@ export default function AnimatedButton({
   const baseStyles = 'inline-flex items-center justify-center gap-2 font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed'
 
   const variants = {
-    primary: 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm hover:shadow-md',
-    secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200 border border-gray-300',
+    primary: 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-lg hover:shadow-xl',
+    secondary: 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300',
     success: 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm hover:shadow-md',
     danger: 'bg-rose-600 text-white hover:bg-rose-700 shadow-sm hover:shadow-md',
     ghost: 'text-gray-700 hover:bg-gray-100',

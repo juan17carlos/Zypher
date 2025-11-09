@@ -231,7 +231,7 @@ export default function TaskModal({
               className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full"
             >
           {/* Header */}
-          <div className="bg-gradient-to-r from-indigo-600 to-indigo-700 px-6 py-5">
+          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="bg-white/20 p-2 rounded-lg">
@@ -433,7 +433,7 @@ export default function TaskModal({
                   whileHover={{ scale: loading || !isFormValid ? 1 : 1.05 }}
                   whileTap={{ scale: loading || !isFormValid ? 1 : 0.95 }}
                   disabled={loading || !isFormValid}
-                  className="inline-flex items-center gap-2 px-6 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="inline-flex items-center gap-2 px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all"
                 >
                   {loading ? (
                     <>

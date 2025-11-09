@@ -315,7 +315,7 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
             <div className="w-72 bg-gray-50 border-r border-gray-200 p-6 space-y-4">
               <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
                 <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-100 text-indigo-600 text-xl font-bold mb-3">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-xl font-bold mb-3">
                     <Target className="w-8 h-8" />
                   </div>
                   <h4 className="font-bold text-gray-900">{formData.title || 'Nuevo Deal'}</h4>
@@ -675,7 +675,7 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                           onClick={handleAddTag}
-                          className="px-6 py-3 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors"
+                          className="px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg transition-all"
                         >
                           Agregar
                         </motion.button>
@@ -685,7 +685,7 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
                           formData.tags.map((tag, idx) => (
                             <span
                               key={idx}
-                              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-indigo-600 text-white"
+                              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium bg-gradient-to-r from-indigo-500 to-purple-600 text-white"
                             >
                               {tag}
                               <button
@@ -740,7 +740,7 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
                     whileTap={{ scale: 0.95 }}
                     onClick={onClose}
                     disabled={loading}
-                    className="px-6 py-3 text-sm font-medium text-gray-700 bg-gray-200 border border-gray-300 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50"
+                    className="px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
                   >
                     Cancelar
                   </motion.button>
@@ -750,7 +750,7 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
                     whileTap={{ scale: loading || !isFormValid ? 1 : 0.95 }}
                     onClick={handleSubmit}
                     disabled={loading || !isFormValid}
-                    className="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+                    className="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
                   >
                     {loading ? (
                       <>
