@@ -272,18 +272,18 @@ export default function ContactModal({
 
         {/* Modal Container - MAS GRANDE */}
         <div className="relative inline-block w-full max-w-6xl my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl">
-          {/* Header */}
-          <div className="relative px-8 py-6 bg-white border-b border-gray-200">
+          {/* Header con gradiente */}
+          <div className="relative px-8 py-6 bg-gradient-to-r from-indigo-600 to-purple-600">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-indigo-50 rounded-xl">
-                  <UserCircle2 className="w-8 h-8 text-indigo-600" />
+                <div className="p-3 bg-white bg-opacity-20 rounded-xl backdrop-blur-sm">
+                  <UserCircle2 className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-gray-900">
+                  <h3 className="text-2xl font-bold text-white">
                     {contact ? 'Editar Contacto' : 'Nuevo Contacto'}
                   </h3>
-                  <p className="text-gray-600 text-sm mt-1">
+                  <p className="text-indigo-100 text-sm mt-1">
                     {contact
                       ? 'Actualiza la información del contacto'
                       : 'Completa los datos para crear un nuevo contacto'}
@@ -292,7 +292,7 @@ export default function ContactModal({
               </div>
               <button
                 onClick={onClose}
-                className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 text-white hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -818,7 +818,7 @@ export default function ContactModal({
                     type="button"
                     onClick={onClose}
                     disabled={loading}
-                    className="px-6 py-3 text-sm font-medium text-gray-700 bg-gray-200 border border-gray-300 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50"
+                    className="px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
                   >
                     Cancelar
                   </button>
@@ -826,7 +826,7 @@ export default function ContactModal({
                     type="submit"
                     onClick={handleSubmit}
                     disabled={loading || !isFormValid}
-                    className="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+                    className="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
                   >
                     {loading ? (
                       <>
