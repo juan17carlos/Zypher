@@ -21,6 +21,7 @@ interface DatePickerProps {
   timeFormat?: string
   timeIntervals?: number
   dateFormat?: string
+  inModal?: boolean
 }
 
 // Custom Input Component
@@ -54,6 +55,7 @@ export default function DatePicker({
   required = false,
   minDate,
   maxDate,
+  inModal = false,
 }: DatePickerProps) {
 
   return (
@@ -79,6 +81,7 @@ export default function DatePicker({
           customInput={<CustomInput placeholder={placeholder} />}
           calendarClassName="bitrix-calendar"
           popperClassName="bitrix-calendar-popper"
+          withPortal={inModal}
           renderCustomHeader={({
             date,
             decreaseMonth,

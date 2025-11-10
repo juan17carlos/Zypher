@@ -9,11 +9,10 @@ import {
   X,
   Home,
   Briefcase,
-  Calendar,
-  BarChart3,
-  Settings,
   Zap,
   ChevronRight,
+  User,
+  CheckSquare,
 } from 'lucide-react'
 
 interface MenuItem {
@@ -32,27 +31,18 @@ const menuItems: MenuItem[] = [
   },
   {
     icon: Briefcase,
-    label: 'CRM',
-    items: [
-      { label: 'Negociaciones', href: '/deals' },
-      { label: 'Contactos', href: '/contacts' },
-      { label: 'Tareas', href: '/tasks' },
-    ],
+    label: 'Negociaciones',
+    href: '/deals',
   },
   {
-    icon: Calendar,
-    label: 'Calendario',
-    href: '/calendar',
+    icon: User,
+    label: 'Contactos',
+    href: '/contacts',
   },
   {
-    icon: BarChart3,
-    label: 'Reportes',
-    href: '/reports',
-  },
-  {
-    icon: Settings,
-    label: 'Configuración',
-    href: '/settings',
+    icon: CheckSquare,
+    label: 'Tareas',
+    href: '/tasks',
   },
 ]
 
@@ -209,7 +199,7 @@ export default function SidebarBitrix() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="mt-4 mx-2"
+                className="mt-6 mx-2 mb-4"
               >
                 <motion.button
                   whileHover={{ scale: 1.02 }}

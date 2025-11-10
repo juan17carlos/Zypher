@@ -611,6 +611,7 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
                           })
                         }
                         placeholder="Selecciona una fecha"
+                        inModal={true}
                       />
                     </div>
 
@@ -627,6 +628,7 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
                               actual_close_date: date ? date.toISOString().split('T')[0] : null,
                             })
                           }
+                          inModal={true}
                           placeholder="Selecciona una fecha"
                         />
                       </div>
@@ -768,7 +770,7 @@ export default function DealModal({ isOpen, onClose, onSuccess, deal }: DealModa
               </div>
             </div>
           </div>
-        </motion.div>
+          </motion.div>
         </div>
       </div>
       )}

@@ -228,29 +228,26 @@ export default function TaskModal({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ duration: 0.3, type: 'spring', damping: 25 }}
-              className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full"
+              className="relative inline-block w-full max-w-2xl my-8 text-left align-middle bg-white rounded-xl shadow-2xl transform transition-all"
             >
-          {/* Header */}
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-5">
+          {/* Header - Bitrix24 style */}
+          <div className="bg-white px-6 py-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="bg-white/20 p-2 rounded-lg">
-                  <CheckCircle2 className="w-6 h-6 text-white" />
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <CheckCircle2 className="w-5 h-5 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-white">
+                  <h3 className="text-lg font-semibold text-gray-900">
                     {task ? 'Editar Tarea' : 'Nueva Tarea'}
                   </h3>
-                  <p className="text-sm text-indigo-100 mt-0.5">
-                    {task ? 'Actualiza la información de la tarea' : 'Crea una nueva tarea'}
-                  </p>
                 </div>
               </div>
               <motion.button
-                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={onClose}
-                className="text-white/80 hover:text-white hover:bg-white/10 p-2 rounded-lg transition-colors"
+                className="text-gray-400 hover:text-gray-600 p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
               >
                 <X className="w-5 h-5" />
               </motion.button>
@@ -413,41 +410,37 @@ export default function TaskModal({
               </div>
             </div>
 
-            {/* Footer */}
-            <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200">
-              <p className="text-sm text-gray-500">* Campos obligatorios</p>
-
-              <div className="flex items-center gap-3">
-                <motion.button
-                  type="button"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={onClose}
-                  disabled={loading}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  Cancelar
-                </motion.button>
-                <motion.button
-                  type="submit"
-                  whileHover={{ scale: loading || !isFormValid ? 1 : 1.05 }}
-                  whileTap={{ scale: loading || !isFormValid ? 1 : 0.95 }}
-                  disabled={loading || !isFormValid}
-                  className="inline-flex items-center gap-2 px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Guardando...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-4 h-4" />
-                      {task ? 'Actualizar' : 'Crear'} Tarea
-                    </>
-                  )}
-                </motion.button>
-              </div>
+            {/* Footer - Bitrix24 style */}
+            <div className="bg-white px-6 py-4 flex items-center justify-end gap-3 border-t border-gray-200">
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={onClose}
+                disabled={loading}
+                className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Cancelar
+              </motion.button>
+              <motion.button
+                type="submit"
+                whileHover={{ scale: loading || !isFormValid ? 1 : 1.02 }}
+                whileTap={{ scale: loading || !isFormValid ? 1 : 0.98 }}
+                disabled={loading || !isFormValid}
+                className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Guardando...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4" />
+                    {task ? 'Guardar' : 'Crear'}
+                  </>
+                )}
+              </motion.button>
             </div>
           </form>
         </motion.div>

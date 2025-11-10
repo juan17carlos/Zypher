@@ -27,9 +27,9 @@ class DealBase(BaseModel):
     @field_validator("stage", "priority", "source", mode="before")
     @classmethod
     def normalize_enums(cls, v):
-        """Normaliza enums a minúsculas"""
+        """Normaliza enums a mayúsculas"""
         if isinstance(v, str):
-            return v.lower()
+            return v.upper()
         return v
 
 
@@ -72,9 +72,9 @@ class DealUpdate(BaseModel):
     @field_validator("stage", "priority", "source", mode="before")
     @classmethod
     def normalize_enums(cls, v):
-        """Normaliza enums a minúsculas"""
+        """Normaliza enums a mayúsculas"""
         if isinstance(v, str):
-            return v.lower()
+            return v.upper()
         return v
 
 
