@@ -1,8 +1,7 @@
 // frontend/src/pages/ContactsPage.tsx - Página principal de Contactos
 
 import { useState } from 'react'
-import ContactsStats from '@/components/contacts/ContactsStats'
-import ContactsTable from '@/components/contacts/ContactsTable'
+import ContactsTableNew from '@/components/contacts/ContactsTableNew'
 import ContactModal from '@/components/contacts/ContactModal'
 import type { ContactOut } from '@/types/contact'
 import contactService from '@/services/contactsService'
@@ -46,12 +45,9 @@ export default function ContactsPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
-      {/* Estadísticas */}
-      <ContactsStats key={`stats-${refreshKey}`} />
-
-      {/* Tabla de Contactos */}
-      <ContactsTable
+    <div>
+      {/* Tabla de Contactos con Stats integrados */}
+      <ContactsTableNew
         key={`table-${refreshKey}`}
         onContactClick={handleContactClick}
         onEditClick={handleEditClick}
