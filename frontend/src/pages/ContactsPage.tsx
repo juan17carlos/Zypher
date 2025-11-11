@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import ContactsTableNew from '@/components/contacts/ContactsTableNew'
-import ContactModal from '@/components/contacts/ContactModal'
+import ContactModalNew from '@/components/contacts/ContactModalNew'
 import type { ContactOut } from '@/types/contact'
 import contactService from '@/services/contactsService'
 
@@ -56,7 +56,7 @@ export default function ContactsPage() {
       />
 
       {/* Modal Crear/Editar */}
-      <ContactModal
+      <ContactModalNew
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSuccess={handleModalSuccess}
