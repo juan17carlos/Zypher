@@ -71,7 +71,16 @@ class DealsService {
    */
   async create(data: DealCreate): Promise<DealOut> {
     try {
-      const response = await api.post<DealOut>(this.baseURL, data)
+      // El backend ahora normaliza los enums a mayúsculas automáticamente
+      // pero enviamos en mayúsculas por si acaso
+      const normalizedData = {
+        ...data,
+        stage: String(data.stage).toUpperCase() as DealStage,
+        priority: String(data.priority).toUpperCase() as DealPriority,
+        source: data.source ? String(data.source).toUpperCase() as DealSource : null,
+      }
+
+      const response = await api.post<DealOut>(this.baseURL, normalizedData)
       return response.data
     } catch (error: any) {
       throw new Error(error.response?.data?.detail || 'Error al crear deal')
@@ -83,7 +92,14 @@ class DealsService {
    */
   async update(id: string, data: DealUpdate): Promise<DealOut> {
     try {
-      const response = await api.put<DealOut>(`${this.baseURL}/${id}`, data)
+      // Normalizar enums a mayúsculas para el backend
+      const normalizedData = {
+        ...data,
+        stage: data.stage ? (data.stage as string).toUpperCase() as DealStage : undefined,
+        priority: data.priority ? (data.priority as string).toUpperCase() as DealPriority : undefined,
+        source: data.source ? (data.source as string).toUpperCase() as DealSource : data.source === null ? null : undefined,
+      }
+      const response = await api.put<DealOut>(`${this.baseURL}/${id}`, normalizedData)
       return response.data
     } catch (error: any) {
       throw new Error(error.response?.data?.detail || 'Error al actualizar deal')
@@ -95,7 +111,12 @@ class DealsService {
    */
   async updateStage(id: string, data: DealStageUpdate): Promise<DealOut> {
     try {
-      const response = await api.patch<DealOut>(`${this.baseURL}/${id}/stage`, data)
+      // Normalizar stage a mayúsculas para el backend
+      const normalizedData = {
+        ...data,
+        stage: data.stage.toUpperCase(),
+      }
+      const response = await api.patch<DealOut>(`${this.baseURL}/${id}/stage`, normalizedData)
       return response.data
     } catch (error: any) {
       throw new Error(error.response?.data?.detail || 'Error al actualizar etapa')

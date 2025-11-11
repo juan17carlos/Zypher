@@ -1,6 +1,7 @@
 // frontend/src/components/contacts/ContactModal.tsx - Modal ELABORADO y profesional
 
 import { useState, useEffect, useMemo } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   X,
   User,
@@ -21,6 +22,7 @@ import {
 import contactService from '@/services/contactsService'
 import type { ContactOut, ContactCreate, ContactUpdate, IndustryTemplate } from '@/types/contact'
 import { IndustryLabels, INDUSTRIES_OPTIONS } from '@/types/contact'
+import SelectDropdown from '@/components/ui/SelectDropdown'
 
 interface ContactModalProps {
   isOpen: boolean
@@ -261,16 +263,28 @@ export default function ContactModal({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20">
-        {/* Overlay con blur */}
-        <div
-          className="fixed inset-0 transition-opacity bg-gray-900 bg-opacity-60 backdrop-blur-sm"
-          onClick={onClose}
-        />
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20">
+            {/* Overlay con blur */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-gray-900 bg-opacity-60 backdrop-blur-sm"
+              onClick={onClose}
+            />
 
-        {/* Modal Container - MAS GRANDE */}
-        <div className="relative inline-block w-full max-w-6xl my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl">
+            {/* Modal Container - MAS GRANDE */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.3, type: 'spring', damping: 25 }}
+              className="relative inline-block w-full max-w-6xl my-8 overflow-hidden text-left align-middle bg-white shadow-2xl rounded-2xl"
+            >
           {/* Header con fondo blanco */}
           <div className="relative px-8 py-6 bg-white border-b border-gray-200">
             <div className="flex items-center justify-between">
@@ -289,12 +303,14 @@ export default function ContactModal({
                   </p>
                 </div>
               </div>
-              <button
+              <motion.button
+                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={onClose}
                 className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
               >
                 <X className="w-6 h-6" />
-              </button>
+              </motion.button>
             </div>
           </div>
 
@@ -427,9 +443,11 @@ export default function ContactModal({
                   {tabs.map((tab) => {
                     const Icon = tab.icon
                     return (
-                      <button
+                      <motion.button
                         key={tab.id}
                         type="button"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         onClick={() => setActiveTab(tab.id)}
                         className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                           activeTab === tab.id
@@ -439,7 +457,7 @@ export default function ContactModal({
                       >
                         <Icon className="w-4 h-4" />
                         {tab.label}
-                      </button>
+                      </motion.button>
                     )
                   })}
                 </nav>
@@ -619,22 +637,20 @@ export default function ContactModal({
                         <Tag className="w-4 h-4 text-indigo-600" />
                         Industria
                       </label>
-                      <select
+                      <SelectDropdown
                         value={formData.industry_template}
-                        onChange={(e) =>
+                        onChange={(value) =>
                           setFormData({
                             ...formData,
-                            industry_template: e.target.value as IndustryTemplate,
+                            industry_template: value as IndustryTemplate,
                           })
                         }
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                      >
-                        {INDUSTRIES_OPTIONS.map((opt) => (
-                          <option key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </option>
-                        ))}
-                      </select>
+                        options={INDUSTRIES_OPTIONS.map((opt) => ({
+                          value: opt.value,
+                          label: opt.label,
+                        }))}
+                        placeholder="Selecciona una industria"
+                      />
                     </div>
 
                     <div className="p-4 bg-blue-50 border-l-4 border-blue-500 rounded-lg">
@@ -739,13 +755,15 @@ export default function ContactModal({
                           className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                           placeholder="Escribe un tag y presiona Enter"
                         />
-                        <button
+                        <motion.button
                           type="button"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
                           onClick={handleAddTag}
-                          className="px-6 py-3 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors"
+                          className="px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg transition-all"
                         >
                           Agregar
-                        </button>
+                        </motion.button>
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {formData.tags && formData.tags.length > 0 ? (
@@ -813,16 +831,20 @@ export default function ContactModal({
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <button
+                  <motion.button
                     type="button"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={onClose}
                     disabled={loading}
                     className="px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
                   >
                     Cancelar
-                  </button>
-                  <button
+                  </motion.button>
+                  <motion.button
                     type="submit"
+                    whileHover={{ scale: loading || !isFormValid ? 1 : 1.05 }}
+                    whileTap={{ scale: loading || !isFormValid ? 1 : 0.95 }}
                     onClick={handleSubmit}
                     disabled={loading || !isFormValid}
                     className="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
@@ -838,13 +860,15 @@ export default function ContactModal({
                         {contact ? 'Actualizar Contacto' : 'Crear Contacto'}
                       </>
                     )}
-                  </button>
+                  </motion.button>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
+      )}
+    </AnimatePresence>
   )
 }

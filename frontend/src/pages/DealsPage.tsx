@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
-import DealsStats from '@/components/deals/DealsStats'
+import DealsKanban from '@/components/deals/DealsKanban'
 import DealModal from '@/components/deals/DealModal'
+import AnimatedButton from '@/components/ui/AnimatedButton'
 import type { DealOut } from '@/types/deal'
 
 export default function DealsPage() {
@@ -16,10 +17,10 @@ export default function DealsPage() {
     setModalOpen(true)
   }
 
-  // const _handleEdit = (deal: DealOut) => {
-  //   setSelectedDeal(deal)
-  //   setModalOpen(true)
-  // }
+  const handleEdit = (deal: DealOut) => {
+    setSelectedDeal(deal)
+    setModalOpen(true)
+  }
 
   const handleSuccess = () => {
     setRefreshTrigger((prev) => prev + 1)
@@ -31,35 +32,26 @@ export default function DealsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <div className="h-full flex flex-col">
+      {/* Header compacto */}
+      <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Pipeline de Ventas</h1>
-          <p className="text-gray-600 mt-1">Gestiona tus oportunidades de negocio</p>
+          <h1 className="text-2xl font-bold text-gray-900">Negociaciones</h1>
+          <p className="text-sm text-gray-600 mt-1">Pipeline de ventas</p>
         </div>
-        <button
+        <AnimatedButton
           onClick={handleCreate}
-          className="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors shadow-lg hover:shadow-xl"
+          variant="primary"
+          size="md"
+          icon={<Plus className="w-5 h-5" />}
         >
-          <Plus className="w-5 h-5" />
-          Nuevo Deal
-        </button>
+          Crear
+        </AnimatedButton>
       </div>
 
-      {/* Estadísticas */}
-      <DealsStats key={refreshTrigger} />
-
-      {/* Tabla/Pipeline */}
-      <div className="bg-white rounded-xl border border-gray-200 p-8">
-        <div className="text-center py-12">
-          <p className="text-gray-500 text-lg mb-4">
-            Vista de tabla y pipeline Kanban - En desarrollo
-          </p>
-          <p className="text-sm text-gray-400">
-            Usa el botón "Nuevo Deal" para crear oportunidades de venta
-          </p>
-        </div>
+      {/* Kanban Board - PANTALLA COMPLETA */}
+      <div className="flex-1 overflow-hidden">
+        <DealsKanban onEditDeal={handleEdit} refreshTrigger={refreshTrigger} onCreateDeal={handleCreate} />
       </div>
 
       {/* Modal */}

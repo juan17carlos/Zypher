@@ -1,17 +1,14 @@
 // frontend/src/components/tasks/TaskModal.tsx - Modal profesional para Tasks
 
 import { useState, useEffect, useMemo } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   X,
-  Calendar,
   AlertCircle,
   Loader2,
   Save,
   CheckCircle2,
-  User,
-  Briefcase,
   FileText,
-  Clock,
 } from 'lucide-react'
 import tasksService from '@/services/tasksService'
 import contactsService from '@/services/contactsService'
@@ -20,6 +17,8 @@ import type { TaskOut, TaskCreate, TaskUpdate } from '@/types/task'
 import type { ContactOut } from '@/types/contact'
 import type { DealOut } from '@/types/deal'
 import { STATUS_OPTIONS, PRIORITY_OPTIONS } from '@/types/task'
+import SelectDropdown from '@/components/ui/SelectDropdown'
+import DatePicker from '@/components/ui/DatePicker'
 
 interface TaskModalProps {
   isOpen: boolean
@@ -209,38 +208,49 @@ export default function TaskModal({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-        {/* Overlay */}
-        <div
-          className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75"
-          onClick={onClose}
-        />
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            {/* Overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-gray-500 bg-opacity-75"
+              onClick={onClose}
+            />
 
-        {/* Modal */}
-        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
-          {/* Header */}
-          <div className="bg-gradient-to-r from-indigo-600 to-indigo-700 px-6 py-5">
+            {/* Modal */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.3, type: 'spring', damping: 25 }}
+              className="relative inline-block w-full max-w-2xl my-8 text-left align-middle bg-white rounded-xl shadow-2xl transform transition-all"
+            >
+          {/* Header - Bitrix24 style */}
+          <div className="bg-white px-6 py-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="bg-white/20 p-2 rounded-lg">
-                  <CheckCircle2 className="w-6 h-6 text-white" />
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <CheckCircle2 className="w-5 h-5 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-white">
+                  <h3 className="text-lg font-semibold text-gray-900">
                     {task ? 'Editar Tarea' : 'Nueva Tarea'}
                   </h3>
-                  <p className="text-sm text-indigo-100 mt-0.5">
-                    {task ? 'Actualiza la información de la tarea' : 'Crea una nueva tarea'}
-                  </p>
                 </div>
               </div>
-              <button
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={onClose}
-                className="text-white/80 hover:text-white hover:bg-white/10 p-2 rounded-lg transition-colors"
+                className="text-gray-400 hover:text-gray-600 p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
               >
                 <X className="w-5 h-5" />
-              </button>
+              </motion.button>
             </div>
           </div>
 
@@ -306,40 +316,30 @@ export default function TaskModal({
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Estado
                   </label>
-                  <div className="relative">
-                    <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-                    <select
-                      value={formData.status}
-                      onChange={(e) => handleChange('status', e.target.value)}
-                      className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none bg-white"
-                    >
-                      {STATUS_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <SelectDropdown
+                    value={formData.status}
+                    onChange={(value) => handleChange('status', value)}
+                    options={STATUS_OPTIONS.map((opt) => ({
+                      value: opt.value,
+                      label: opt.label,
+                    }))}
+                    placeholder="Selecciona estado"
+                  />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Prioridad
                   </label>
-                  <div className="relative">
-                    <AlertCircle className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-                    <select
-                      value={formData.priority}
-                      onChange={(e) => handleChange('priority', e.target.value)}
-                      className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none bg-white"
-                    >
-                      {PRIORITY_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <SelectDropdown
+                    value={formData.priority}
+                    onChange={(value) => handleChange('priority', value)}
+                    options={PRIORITY_OPTIONS.map((opt) => ({
+                      value: opt.value,
+                      label: opt.label,
+                    }))}
+                    placeholder="Selecciona prioridad"
+                  />
                 </div>
               </div>
 
@@ -348,15 +348,17 @@ export default function TaskModal({
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Fecha de Vencimiento
                 </label>
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-                  <input
-                    type="datetime-local"
-                    value={formData.due_date ? formData.due_date.slice(0, 16) : ''}
-                    onChange={(e) => handleChange('due_date', e.target.value || null)}
-                    className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
+                <DatePicker
+                  selected={formData.due_date ? new Date(formData.due_date) : null}
+                  onChange={(date) =>
+                    handleChange('due_date', date ? date.toISOString() : null)
+                  }
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={15}
+                  dateFormat="dd/MM/yyyy HH:mm"
+                  placeholder="Selecciona fecha y hora"
+                />
               </div>
 
               {/* Relacionar con Contacto */}
@@ -364,24 +366,23 @@ export default function TaskModal({
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Contacto Relacionado
                 </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-                  <select
-                    value={formData.contact_id || ''}
-                    onChange={(e) =>
-                      handleChange('contact_id', e.target.value ? parseInt(e.target.value) : null)
-                    }
-                    disabled={loadingContacts}
-                    className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none bg-white disabled:bg-gray-50"
-                  >
-                    <option value="">Sin contacto</option>
-                    {contacts.map((contact) => (
-                      <option key={contact.id} value={contact.id}>
-                        {contact.full_name} {contact.company ? `- ${contact.company}` : ''}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <SelectDropdown
+                  value={formData.contact_id?.toString() || ''}
+                  onChange={(value) =>
+                    handleChange('contact_id', value ? parseInt(value) : null)
+                  }
+                  options={[
+                    { value: '', label: 'Sin contacto' },
+                    ...contacts.map((contact) => ({
+                      value: contact.id.toString(),
+                      label: contact.full_name,
+                      description: contact.company || undefined,
+                    })),
+                  ]}
+                  placeholder="Selecciona un contacto"
+                  disabled={loadingContacts}
+                  searchable
+                />
               </div>
 
               {/* Relacionar con Deal */}
@@ -389,62 +390,63 @@ export default function TaskModal({
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Deal Relacionado
                 </label>
-                <div className="relative">
-                  <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-                  <select
-                    value={formData.deal_id || ''}
-                    onChange={(e) =>
-                      handleChange('deal_id', e.target.value ? parseInt(e.target.value) : null)
-                    }
-                    disabled={loadingDeals}
-                    className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none bg-white disabled:bg-gray-50"
-                  >
-                    <option value="">Sin deal</option>
-                    {deals.map((deal) => (
-                      <option key={deal.id} value={deal.id}>
-                        {deal.title} - ${deal.value}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <SelectDropdown
+                  value={formData.deal_id?.toString() || ''}
+                  onChange={(value) =>
+                    handleChange('deal_id', value ? parseInt(value) : null)
+                  }
+                  options={[
+                    { value: '', label: 'Sin deal' },
+                    ...deals.map((deal) => ({
+                      value: deal.id.toString(),
+                      label: deal.title,
+                      description: `$${deal.value}`,
+                    })),
+                  ]}
+                  placeholder="Selecciona un deal"
+                  disabled={loadingDeals}
+                  searchable
+                />
               </div>
             </div>
 
-            {/* Footer */}
-            <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200">
-              <p className="text-sm text-gray-500">* Campos obligatorios</p>
-
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  disabled={loading}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading || !isFormValid}
-                  className="inline-flex items-center gap-2 px-6 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Guardando...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-4 h-4" />
-                      {task ? 'Actualizar' : 'Crear'} Tarea
-                    </>
-                  )}
-                </button>
-              </div>
+            {/* Footer - Bitrix24 style */}
+            <div className="bg-white px-6 py-4 flex items-center justify-end gap-3 border-t border-gray-200">
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={onClose}
+                disabled={loading}
+                className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Cancelar
+              </motion.button>
+              <motion.button
+                type="submit"
+                whileHover={{ scale: loading || !isFormValid ? 1 : 1.02 }}
+                whileTap={{ scale: loading || !isFormValid ? 1 : 0.98 }}
+                disabled={loading || !isFormValid}
+                className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Guardando...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4" />
+                    {task ? 'Guardar' : 'Crear'}
+                  </>
+                )}
+              </motion.button>
             </div>
           </form>
-        </div>
+        </motion.div>
       </div>
     </div>
+      )}
+    </AnimatePresence>
   )
 }

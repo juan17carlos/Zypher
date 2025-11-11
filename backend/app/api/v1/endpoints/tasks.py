@@ -44,7 +44,7 @@ async def get_tasks_paginated(
 ):
     """Obtener tasks paginadas con filtros y búsqueda"""
 
-    user_id = int(current_user["sub"])
+    user_id = current_user.id
 
     # Query base
     query = db.query(Task).filter(Task.assigned_to_id == user_id)
@@ -114,7 +114,7 @@ async def get_tasks_stats(
 ):
     """Obtener estadísticas de tasks"""
 
-    user_id = int(current_user["sub"])
+    user_id = current_user.id
 
     # Query base
     query = db.query(Task).filter(Task.assigned_to_id == user_id)
@@ -195,7 +195,7 @@ async def get_task(
 ):
     """Obtener una task específica con detalles"""
 
-    user_id = int(current_user["sub"])
+    user_id = current_user.id
 
     task = db.query(Task).filter(
         Task.id == task_id,
@@ -246,7 +246,7 @@ async def create_task(
 ):
     """Crear nueva task"""
 
-    user_id = int(current_user["sub"])
+    user_id = current_user.id
 
     # Verificar que el contacto existe si se proporciona
     if task_data.contact_id:
@@ -291,7 +291,7 @@ async def update_task(
 ):
     """Actualizar task"""
 
-    user_id = int(current_user["sub"])
+    user_id = current_user.id
 
     task = db.query(Task).filter(
         Task.id == task_id,
@@ -331,7 +331,7 @@ async def delete_task(
 ):
     """Eliminar task"""
 
-    user_id = int(current_user["sub"])
+    user_id = current_user.id
 
     task = db.query(Task).filter(
         Task.id == task_id,

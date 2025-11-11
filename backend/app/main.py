@@ -26,7 +26,9 @@ async def catch_exceptions_middleware(request: Request, call_next):
     try:
         return await call_next(request)
     except Exception as exc:
+        import traceback
         print(f"Error no controlado: {exc}")
+        print(traceback.format_exc())
         return JSONResponse(
             status_code=500,
             content={"detail": "Error interno del servidor"}
