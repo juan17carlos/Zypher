@@ -23,6 +23,7 @@ import dealsService from '@/services/dealsService'
 import contactsService from '@/services/contactsService'
 import type { DealOut, DealCreate, DealUpdate, DealStage, DealPriority, DealSource } from '@/types/deal'
 import type { ContactOut } from '@/types/contact'
+import type { DealProduct } from '@/types/product'
 import {
   STAGE_OPTIONS,
   PRIORITY_OPTIONS,
@@ -32,6 +33,9 @@ import {
   PriorityLabels,
 } from '@/types/deal'
 import CustomDropdown from '@/components/ui/CustomDropdown'
+import DealProductsSection from '@/components/deals/DealProductsSection'
+import QuotationPreview from '@/components/deals/QuotationPreview'
+import { Package, Eye } from 'lucide-react'
 
 interface DealModalNewProps {
   isOpen: boolean
@@ -115,9 +119,14 @@ export default function DealModalNew({
   const [expandedSections, setExpandedSections] = useState({
     basic: true,
     financial: false,
+    products: false,
     details: false,
     additional: false,
   })
+
+  // Estado para productos del deal (para cotizaciones)
+  const [dealProducts, setDealProducts] = useState<DealProduct[]>([])
+  const [showQuotationPreview, setShowQuotationPreview] = useState(false)
 
   const [formData, setFormData] = useState<DealCreate>({
     title: '',
@@ -201,9 +210,11 @@ export default function DealModalNew({
       setExpandedSections({
         basic: true,
         financial: false,
+        products: false,
         details: false,
         additional: false,
       })
+      setDealProducts([]) // Reset products cuando se cierra el modal
       setValidationErrors([])
       setTouched(new Set())
       setError(null)
@@ -363,6 +374,7 @@ export default function DealModalNew({
   if (!isOpen) return null
 
   return (
+    <>
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -723,6 +735,28 @@ export default function DealModalNew({
                       </div>
                     </ExpandableSection>
 
+                    {/* Section: Productos (para cotizaciones) */}
+                    <ExpandableSection
+                      title="Productos / Cotización"
+                      icon={Package}
+                      isExpanded={expandedSections.products}
+                      onToggle={() => toggleSection('products')}
+                      isCompleted={dealProducts.length > 0}
+                    >
+                      <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm text-blue-800 dark:text-blue-300">
+                        <p className="font-medium mb-1">💡 Funcionalidad de Cotizaciones</p>
+                        <p className="text-xs text-blue-700 dark:text-blue-400">
+                          Agrega productos a este deal para generar cotizaciones.
+                          Los productos agregados se guardarán cuando conectes al backend.
+                          {/* TODO: Conectar con API de productos y deal_products cuando el backend esté listo */}
+                        </p>
+                      </div>
+                      <DealProductsSection
+                        products={dealProducts}
+                        onChange={setDealProducts}
+                      />
+                    </ExpandableSection>
+
                     {/* Section: Detalles */}
                     <ExpandableSection
                       title="Detalles"
@@ -873,12 +907,29 @@ export default function DealModalNew({
 
                   {/* Footer */}
                   <div className="px-8 py-6 bg-gray-50 dark:bg-dark-800 border-t border-gray-200 dark:border-dark-600 flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-dark-300">
-                      {!isFormValid && (
-                        <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400">
-                          <AlertCircle className="w-4 h-4" />
-                          Completa los campos requeridos
-                        </span>
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-dark-300">
+                        {!isFormValid && (
+                          <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400">
+                            <AlertCircle className="w-4 h-4" />
+                            Completa los campos requeridos
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Botón Ver Cotización (solo visible con productos) */}
+                      {dealProducts.length > 0 && (
+                        <motion.button
+                          type="button"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => setShowQuotationPreview(true)}
+                          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-900/20 border border-purple-300 dark:border-purple-700 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-all"
+                        >
+                          <Eye className="w-4 h-4" />
+                          Ver Cotización ({dealProducts.length}{' '}
+                          {dealProducts.length === 1 ? 'producto' : 'productos'})
+                        </motion.button>
                       )}
                     </div>
 
@@ -922,5 +973,19 @@ export default function DealModalNew({
         </div>
       )}
     </AnimatePresence>
+
+    {/* Quotation Preview Modal */}
+    <QuotationPreview
+      isOpen={showQuotationPreview}
+      onClose={() => setShowQuotationPreview(false)}
+      dealTitle={formData.title || 'Cotización'}
+      contactName={getContactName()}
+      contactEmail={contacts.find((c) => c.id === formData.contact_id)?.email}
+      contactPhone={contacts.find((c) => c.id === formData.contact_id)?.phone}
+      contactCompany={contacts.find((c) => c.id === formData.contact_id)?.company || undefined}
+      products={dealProducts}
+      notes={formData.description || undefined}
+    />
+  </>
   )
 }
