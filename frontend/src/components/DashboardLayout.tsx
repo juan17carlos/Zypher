@@ -24,9 +24,14 @@ import {
   Moon,
   Sun,
   Monitor,
-  Check
+  Check,
+  HelpCircle,
+  Shield,
+  Zap
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import GlobalSearch from '@/components/ui/GlobalSearch'
+import NotificationsPanel from '@/components/ui/NotificationsPanel'
 
 interface NavigationItem {
   path: string
@@ -94,7 +99,7 @@ export default function DashboardLayout() {
       badge: null
     },
     {
-      path: '#',
+      path: '/settings',
       label: 'Configuración',
       icon: Settings,
       badge: null
@@ -302,24 +307,16 @@ export default function DashboardLayout() {
                   <Menu className="w-6 h-6 text-gray-600 dark:text-gray-400" />
                 </button>
 
-                {/* Search bar */}
+                {/* Global Search */}
                 <div className="hidden md:flex relative flex-1 max-w-md">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Buscar en CRM..."
-                    className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-dark-700 border border-gray-200 dark:border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                  />
+                  <GlobalSearch />
                 </div>
               </div>
 
               {/* Right side */}
               <div className="flex items-center gap-2 lg:gap-4">
-                {/* Notifications */}
-                <button className="relative p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-700 rounded-lg transition-colors">
-                  <Bell className="w-5 h-5" />
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                </button>
+                {/* Notifications Panel */}
+                <NotificationsPanel />
 
                 {/* Theme toggle */}
                 <button className="hidden md:flex p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-700 rounded-lg transition-colors">
@@ -386,6 +383,39 @@ export default function DashboardLayout() {
                           >
                             <Settings className="w-4 h-4 mr-3" />
                             Configuración
+                          </button>
+                          <button
+                            onClick={() => {
+                              setShowUserMenu(false)
+                              // Show keyboard shortcuts modal (future implementation)
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-dark-700 flex items-center transition-colors"
+                          >
+                            <Zap className="w-4 h-4 mr-3" />
+                            Atajos de Teclado
+                          </button>
+                        </div>
+
+                        <div className="border-t border-gray-100 dark:border-dark-700 py-2">
+                          <button
+                            onClick={() => {
+                              setShowUserMenu(false)
+                              // Navigate to help center (future implementation)
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-dark-700 flex items-center transition-colors"
+                          >
+                            <HelpCircle className="w-4 h-4 mr-3" />
+                            Centro de Ayuda
+                          </button>
+                          <button
+                            onClick={() => {
+                              setShowUserMenu(false)
+                              // Navigate to privacy settings (future implementation)
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-dark-700 flex items-center transition-colors"
+                          >
+                            <Shield className="w-4 h-4 mr-3" />
+                            Privacidad y Seguridad
                           </button>
                         </div>
 

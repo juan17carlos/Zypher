@@ -8,6 +8,7 @@ import DashboardPageNew from './pages/DashboardPageNew'
 import ContactsPage from './pages/ContactsPage'
 import DealsPageNew from './pages/DealsPageNew'
 import TasksPageNew from './pages/TasksPageNew'
+import SettingsPage from './pages/SettingsPage'
 
 // Demo
 import DemoIndex from './pages/DemoIndex'
@@ -51,6 +52,7 @@ function App() {
         <Route path="contacts" element={<ContactsPage />} />
         <Route path="deals" element={<DealsPageNew />} />
         <Route path="tasks" element={<TasksPageNew />} />
+        <Route path="settings" element={<SettingsPage />} />
       </Route>
 
       {/* 404 */}
