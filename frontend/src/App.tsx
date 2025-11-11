@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 
 // Pages
 import LoginPage from './pages/LoginPage'
-import DashboardPage from './pages/DashboardPage'
+import DashboardPageNew from './pages/DashboardPageNew'
 import ContactsPage from './pages/ContactsPage'
 import DealsPageNew from './pages/DealsPageNew'
 import TasksPageNew from './pages/TasksPageNew'
@@ -47,7 +47,7 @@ function App() {
         }
       >
         <Route index element={<Navigate to="/dashboard" replace />} />
-        <Route path="dashboard" element={<DashboardPage />} />
+        <Route path="dashboard" element={<DashboardPageNew />} />
         <Route path="contacts" element={<ContactsPage />} />
         <Route path="deals" element={<DealsPageNew />} />
         <Route path="tasks" element={<TasksPageNew />} />
