@@ -7,7 +7,7 @@ import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 import ContactsPage from './pages/ContactsPage'
 import DealsPageNew from './pages/DealsPageNew'
-import TasksPage from './pages/TasksPage'
+import TasksPageNew from './pages/TasksPageNew'
 
 // Demo
 import DemoIndex from './pages/DemoIndex'
@@ -50,7 +50,7 @@ function App() {
         <Route path="dashboard" element={<DashboardPage />} />
         <Route path="contacts" element={<ContactsPage />} />
         <Route path="deals" element={<DealsPageNew />} />
-        <Route path="tasks" element={<TasksPage />} />
+        <Route path="tasks" element={<TasksPageNew />} />
       </Route>
 
       {/* 404 */}
