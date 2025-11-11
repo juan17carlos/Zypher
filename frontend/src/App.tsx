@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore } from './stores/authStore'
+import { useEffect } from 'react'
 
 // Pages
 import LoginPage from './pages/LoginPage'
@@ -15,11 +16,16 @@ import Bitrix24Replica from './components/demo/Bitrix24Replica'
 import KanbanBoard from './components/demo/KanbanBoard'
 import FormComponents from './components/demo/FormComponents'
 
-// Layout
-import Layout from './components/Layout'
+// Layout - NUEVO diseño estilo Facturación Pro
+import DashboardLayout from './components/DashboardLayout'
 
 function App() {
   const { isAuthenticated } = useAuthStore()
+
+  // Habilitar dark mode por defecto
+  useEffect(() => {
+    document.documentElement.classList.add('dark')
+  }, [])
 
   return (
     <Routes>
@@ -37,7 +43,7 @@ function App() {
       <Route
         path="/"
         element={
-          isAuthenticated ? <Layout /> : <Navigate to="/login" replace />
+          isAuthenticated ? <DashboardLayout /> : <Navigate to="/login" replace />
         }
       >
         <Route index element={<Navigate to="/dashboard" replace />} />
