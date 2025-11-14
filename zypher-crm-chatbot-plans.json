@@ -1,0 +1,117 @@
+[
+  {
+    "id": "free",
+    "name": "Gratis",
+    "price": 0,
+    "currency": "USD",
+    "billing_period": "30 días de prueba",
+    "description": "Ideal para probar nuestro sistema",
+    "features": [
+      "25 documentos/año",
+      "1 usuario",
+      "25 clientes",
+      "Dashboard básico",
+      "Reportes básicos"
+    ],
+    "limits": {
+      "documents": 25,
+      "users": 1,
+      "clients": 25
+    }
+  },
+  {
+    "id": "independiente",
+    "name": "Independiente",
+    "price": 29,
+    "currency": "USD",
+    "billing_period": "año",
+    "description": "Perfecto para freelancers y profesionales independientes",
+    "features": [
+      "200 documentos/año",
+      "1 usuario",
+      "50 clientes",
+      "Dashboard básico",
+      "Chat soporte",
+      "5% descuento en firmas electrónicas"
+    ],
+    "limits": {
+      "documents": 200,
+      "users": 1,
+      "clients": 50
+    },
+    "recommended_for": ["freelancer", "independiente", "profesional", "solo"]
+  },
+  {
+    "id": "negocio",
+    "name": "Negocio",
+    "price": 55,
+    "currency": "USD",
+    "billing_period": "año",
+    "description": "Ideal para pequeñas empresas",
+    "features": [
+      "400 documentos/año",
+      "5 usuarios",
+      "100 clientes",
+      "Dashboard básico",
+      "Chat soporte",
+      "7.5% descuento en firmas electrónicas"
+    ],
+    "limits": {
+      "documents": 400,
+      "users": 5,
+      "clients": 100
+    },
+    "recommended_for": ["pequeña empresa", "pyme", "negocio", "tienda", "equipo"]
+  },
+  {
+    "id": "profesional",
+    "name": "Profesional",
+    "price": 89,
+    "currency": "USD",
+    "billing_period": "año",
+    "description": "Para empresas en crecimiento - Incluye 1 firma electrónica gratis",
+    "features": [
+      "1,200 documentos/año",
+      "15 usuarios",
+      "Clientes ilimitados",
+      "Dashboard profesional",
+      "Reportes avanzados",
+      "Chat soporte",
+      "Gestión de gastos",
+      "1 firma electrónica GRATIS",
+      "10% descuento adicional en firmas"
+    ],
+    "limits": {
+      "documents": 1200,
+      "users": 15,
+      "clients": -1
+    },
+    "recommended_for": ["crecimiento", "mediana empresa", "expandiendo", "equipo grande"]
+  },
+  {
+    "id": "empresarial",
+    "name": "Empresarial",
+    "price": 149,
+    "currency": "USD",
+    "billing_period": "año",
+    "description": "Plataforma empresarial completa - Incluye 1 firma electrónica gratis",
+    "features": [
+      "Documentos ILIMITADOS",
+      "Usuarios ILIMITADOS",
+      "Clientes ILIMITADOS",
+      "Dashboard profesional",
+      "Reportes avanzados",
+      "ATS automático",
+      "Chat soporte prioritario",
+      "Gestión de gastos",
+      "1 firma electrónica GRATIS",
+      "12.5% descuento adicional en firmas"
+    ],
+    "limits": {
+      "documents": -1,
+      "users": -1,
+      "clients": -1
+    },
+    "recommended_for": ["empresa", "corporativo", "gran volumen", "ilimitado"]
+  }
+]
